@@ -440,7 +440,6 @@ export default function AIFirstUseChecklist() {
             try a real task, and protect private information.
           </p>
           <div className="actions">
-            <a href="/ai-confidence-guide.pdf">Back to the PDF</a>
             <a href="/book-setup-session">Book a 1:1 setup session</a>
             <button onClick={resetChecklist}>Reset checklist</button>
           </div>
@@ -940,7 +939,7 @@ export default function AIFirstUseChecklist() {
           padding: 0 18px;
         }
 
-        .actions a:nth-child(2) {
+        .actions a {
           background: #fbf7ef;
           color: #1f2430;
         }
@@ -1060,7 +1059,7 @@ export default function AIFirstUseChecklist() {
           }
 
           .actions {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
           }
 
           .wizardControls {
