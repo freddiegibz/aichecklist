@@ -119,6 +119,15 @@ const checklistData: {
           tip:
             "Examples often make AI easier to understand than explanations alone.",
         },
+        {
+          title: "Make it sound like you",
+          description:
+            "Use this when the reply is useful, but it sounds too polished, too formal, or not like something you would actually say.",
+          prompt:
+            "Make this sound natural, friendly, and like something I would actually say.",
+          tip:
+            "This is especially useful for emails, texts, replies, and messages where you want to still sound like yourself.",
+        },
       ],
     },
     {
@@ -199,6 +208,14 @@ const totalItems = checklistData.sections.reduce(
   (sum, section) => sum + section.items.length,
   0
 );
+
+const reusablePrompts = [
+  "Please explain what ChatGPT is in simple words. I am new to AI, so use plain language and give me one easy example.",
+  "Make that simpler",
+  "Make that shorter",
+  "Give me an example",
+  "Make this sound natural, friendly, and like something I would actually say.",
+];
 
 export default function AIFirstUseChecklist() {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
@@ -430,6 +447,52 @@ export default function AIFirstUseChecklist() {
         </div>
       </section>
 
+      <section className="summary">
+        <div className="summaryHeader">
+          <p className="artifactLabel">KEEP THIS</p>
+          <h2>
+            Your <span>printable summary</span>
+          </h2>
+          <p>
+            A simple reminder of what you practised, the prompts you can reuse,
+            and the details to keep private.
+          </p>
+          <button onClick={() => window.print()}>Print this summary</button>
+        </div>
+
+        <div className="summaryGrid">
+          <article>
+            <h3>What you learned</h3>
+            <ul>
+              <li>How to open ChatGPT and start a new chat.</li>
+              <li>How to send a clear first prompt.</li>
+              <li>How to ask ChatGPT to make an answer simpler or shorter.</li>
+              <li>How to use AI for one real-life task.</li>
+              <li>How to pause before sharing private information.</li>
+            </ul>
+          </article>
+
+          <article>
+            <h3>5 prompts to reuse</h3>
+            <ol>
+              {reusablePrompts.map((prompt) => (
+                <li key={prompt}>{prompt}</li>
+              ))}
+            </ol>
+          </article>
+
+          <article>
+            <h3>Do not paste</h3>
+            <ul>
+              <li>Passwords, login codes, or recovery codes.</li>
+              <li>Bank details, card numbers, or payment information.</li>
+              <li>Full medical, legal, or official documents with private details.</li>
+              <li>Names, addresses, dates of birth, or reference numbers.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
       <style jsx>{`
         :global(*) {
           box-sizing: border-box;
@@ -454,7 +517,8 @@ export default function AIFirstUseChecklist() {
         .progressWrap,
         .note,
         .sectionBlock,
-        .completion {
+        .completion,
+        .summary {
           width: min(100%, 720px);
           margin: 0 auto;
         }
@@ -885,6 +949,100 @@ export default function AIFirstUseChecklist() {
           border: 1px solid rgba(251, 247, 239, 0.25);
           background: transparent;
           color: #fbf7ef;
+        }
+
+        .summary {
+          padding: 0 22px 74px;
+        }
+
+        .summaryHeader {
+          padding: 28px 0 22px;
+          text-align: center;
+        }
+
+        .summaryHeader h2 {
+          margin-bottom: 10px;
+        }
+
+        .summaryHeader p:not(.artifactLabel) {
+          max-width: 560px;
+          margin: 0 auto 18px;
+          color: #625c69;
+          font-size: 17px;
+          line-height: 1.6;
+        }
+
+        .summaryHeader button {
+          min-height: 50px;
+          padding: 0 22px;
+          border: 0;
+          border-radius: 8px;
+          background: #1f2430;
+          color: #fbf7ef;
+          font-size: 17px;
+          font-weight: 800;
+          cursor: pointer;
+        }
+
+        .summaryGrid {
+          display: grid;
+          gap: 14px;
+        }
+
+        .summaryGrid article {
+          padding: 20px;
+          border: 1px solid rgba(45, 42, 51, 0.1);
+          border-radius: 12px;
+          background: #fffdf8;
+        }
+
+        .summaryGrid h3 {
+          margin-bottom: 12px;
+          font-size: 22px;
+          line-height: 1.25;
+        }
+
+        .summaryGrid ul,
+        .summaryGrid ol {
+          display: grid;
+          gap: 10px;
+          margin: 0;
+          padding-left: 22px;
+          color: #625c69;
+          font-size: 16px;
+          line-height: 1.5;
+        }
+
+        @media print {
+          .hero,
+          .intro,
+          .progressWrap,
+          .note,
+          .stepNav,
+          .sectionBlock,
+          .completion,
+          .summaryHeader button {
+            display: none;
+          }
+
+          :global(body) {
+            background: #fff;
+            color: #111;
+          }
+
+          .summary {
+            width: 100%;
+            padding: 0;
+          }
+
+          .summaryHeader {
+            text-align: left;
+          }
+
+          .summaryGrid article {
+            break-inside: avoid;
+            border-color: #ccc;
+          }
         }
 
         @media (min-width: 680px) {
