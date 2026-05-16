@@ -2132,7 +2132,7 @@ export default function AZLibraryTemplate() {
                 Custom Prompt Builder
               </h2>
               <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555", maxWidth: 720 }}>
-                This takes the pack one step further. If your situation does not fit the core prompt pack, the Builder helps you describe what is going on and turns it into a clear, ready-to-use AI prompt.
+                When your situation is too specific, messy, or unusual for the main prompt pack, the Builder helps you stop guessing what to ask. You describe what is going on, choose the kind of help you need, and it turns that into a clear prompt you can actually use.
               </p>
             </div>
             {builderUnlocked ? (
@@ -2151,10 +2151,10 @@ export default function AZLibraryTemplate() {
                   Access required
                 </p>
                 <h3 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 28 }}>
-                  Enter your password or unlock the Builder
+                  Unlock the Builder
                 </h3>
                 <p style={{ margin: "0 0 18px", lineHeight: 1.7, color: "#4A4555", maxWidth: 560 }}>
-                  Already bought the Custom Prompt Builder? Enter your password below. If not, you can buy access here and use it to create a prompt for situations outside the main pack.
+                  If you already bought the Custom Prompt Builder, enter your password below. If you have not, this is for the moments where the normal prompts do not quite fit and you are stuck trying to work out what to ask AI.
                 </p>
                 <div style={{ display: "grid", gap: 18, maxWidth: 720 }}>
                   <form onSubmit={unlockBuilder} style={{ display: "grid", gap: 12, maxWidth: 420 }}>
@@ -2214,10 +2214,13 @@ export default function AZLibraryTemplate() {
                     }}
                   >
                     <p style={{ margin: 0, fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#7C6BC4" }}>
-                      Need access?
+                      Why people buy this
                     </p>
                     <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555" }}>
-                      Buy the Custom Prompt Builder to unlock a simple guided tool for creating prompts for unusual, messy, or outside-the-norm situations.
+                      Sometimes the problem is not getting an answer. It is not knowing how to ask the question in the first place. The Builder solves that by helping you turn a fuzzy situation into a clear prompt, so you can get unstuck faster and stop staring at a blank box.
+                    </p>
+                    <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555" }}>
+                      It is built for outside-the-norm situations: awkward emails, confusing admin, personal decisions, messy real-life context, or anything that does not fit neatly into the core categories.
                     </p>
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                       <a
@@ -2238,10 +2241,10 @@ export default function AZLibraryTemplate() {
                           fontWeight: 700,
                         }}
                       >
-                        Buy the Builder
+                        Buy the Custom Prompt Builder
                       </a>
                       <span style={{ color: "#8A8680", fontSize: 13 }}>
-                        Instant access after purchase
+                        Buy now, then use your password to unlock it
                       </span>
                     </div>
                   </div>
