@@ -1664,10 +1664,25 @@ export default function AZLibraryTemplate() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [openPromptTitle, setOpenPromptTitle] = useState(null);
   const [copiedPromptTitle, setCopiedPromptTitle] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const visiblePrompts = useMemo(
-    () => starterPrompts.filter((prompt) => prompt.category === activeCategory),
-    [activeCategory]
+    () => {
+      const normalizedQuery = searchQuery.trim().toLowerCase();
+
+      if (!normalizedQuery) {
+        return starterPrompts.filter((prompt) => prompt.category === activeCategory);
+      }
+
+      return starterPrompts.filter((prompt) =>
+        [prompt.title, prompt.useWhen, prompt.copyPrompt, prompt.category]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery)
+      );
+    },
+    [activeCategory, searchQuery]
   );
 
   const copyPrompt = async (title, text) => {
@@ -1687,6 +1702,10 @@ export default function AZLibraryTemplate() {
         .category-pill:hover { transform: translateY(-1px); }
         .help-links a { transition: all 0.18s ease; }
         .help-links a:hover { transform: translateY(-1px); }
+        .mobile-search-toggle,
+        .mobile-search-panel {
+          display: none;
+        }
 
         @media (max-width: 640px) {
           .library-header {
@@ -1739,10 +1758,65 @@ export default function AZLibraryTemplate() {
             flex: 0 0 auto;
             white-space: nowrap;
           }
+
+          .mobile-search-toggle {
+            display: inline-flex;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            min-height: 40px;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            color: #FFFFFF;
+            font-size: 18px;
+            cursor: pointer;
+          }
+
+          .mobile-search-panel {
+            display: block;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.2s ease;
+          }
+
+          .mobile-search-panel.is-open {
+            max-height: 64px;
+            opacity: 1;
+            margin: 0 0 18px;
+          }
+
+          .mobile-search-input {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px;
+            padding: 0 16px;
+            background: rgba(255,255,255,0.08);
+            color: #FFFFFF;
+            outline: none;
+          }
+
+          .mobile-search-input::placeholder {
+            color: #C5C0CC;
+          }
         }
       `}</style>
 
       <header className="library-header" style={{ background: "linear-gradient(135deg, #1E1B2E, #2A2540)", padding: "48px 20px 34px", textAlign: "center", position: "relative" }}>
+        <button
+          className="mobile-search-toggle"
+          type="button"
+          aria-label={searchOpen ? "Close search" : "Open search"}
+          aria-expanded={searchOpen}
+          onClick={() => setSearchOpen((value) => !value)}
+        >
+          ⌕
+        </button>
         <div
           className="help-panel"
           style={{
@@ -1762,6 +1836,16 @@ export default function AZLibraryTemplate() {
               WhatsApp
             </a>
           </div>
+        </div>
+        <div className={`mobile-search-panel ${searchOpen ? "is-open" : ""}`}>
+          <input
+            className="mobile-search-input"
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search prompts"
+            aria-label="Search prompts"
+          />
         </div>
         <p style={{ margin: "0 0 14px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#E8845C" }}>
           {LIBRARY_CONFIG.subtitle}
@@ -1807,7 +1891,7 @@ export default function AZLibraryTemplate() {
               {activeCategory}
             </p>
             <h2 style={{ margin: 0, fontFamily: "'Playfair Display', serif", fontSize: 28 }}>
-              10 prompts
+              {searchQuery.trim() ? `${visiblePrompts.length} results` : "10 prompts"}
             </h2>
           </div>
 
