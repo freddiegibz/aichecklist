@@ -17,13 +17,14 @@ const PROMPT_BUILDER_TYPES = [
   { id: "decide", label: "Decide", badge: "CHK", desc: "Compare options, think clearly, and choose next steps" },
   { id: "organize", label: "Organize", badge: "BOX", desc: "Lists, plans, admin tasks, and practical steps" },
   { id: "safety", label: "Safety", badge: "SHD", desc: "Scam checks, red flags, and safer questions" },
-  { id: "create", label: "Create", badge: "IDEA", desc: "Build a custom prompt for something more specific" },
+  { id: "other", label: "Other", badge: "OTR", desc: "Something outside the usual categories" },
 ];
 
 const PROMPT_BUILDER_TEMPLATES = [
   {
     name: "Explain a confusing letter",
     type: "explain",
+    otherTask: "",
     goal: "Explain a letter or message in plain English so I can understand what it means and what I need to do next.",
     audience: "An everyday person who feels unsure, does not want jargon, and wants a calm, simple explanation.",
     format: "Start with a short plain-English summary. Then list the key points. End with the next 3 steps I should take.",
@@ -33,6 +34,7 @@ const PROMPT_BUILDER_TEMPLATES = [
   {
     name: "Write a polite email reply",
     type: "write",
+    otherTask: "",
     goal: "Write a polite email reply that says what I need clearly without sounding rude or awkward.",
     audience: "Someone replying to a business, landlord, school, service, or workplace message.",
     format: "Write one short subject line if needed, then a clear email reply in simple language.",
@@ -42,6 +44,7 @@ const PROMPT_BUILDER_TEMPLATES = [
   {
     name: "Compare two options clearly",
     type: "decide",
+    otherTask: "",
     goal: "Help me compare two choices and understand the pros, cons, risks, and best next step.",
     audience: "Someone who feels stuck and wants help thinking clearly before making a decision.",
     format: "Use a simple comparison with pros, cons, risks, and a short recommendation based on the information given.",
@@ -51,6 +54,7 @@ const PROMPT_BUILDER_TEMPLATES = [
   {
     name: "Check if something feels like a scam",
     type: "safety",
+    otherTask: "",
     goal: "Help me review a message, offer, or website and spot warning signs before I respond or pay.",
     audience: "Someone who wants to stay safe online and avoid being pressured or tricked.",
     format: "List the red flags, what looks normal, what I should verify myself, and the safest next step.",
@@ -185,14 +189,17 @@ function PromptBuilderTextarea({ value, onChange, placeholder, rows = 4, label, 
   );
 }
 
-function assemblePrompt({ type, goal, audience, format, constraints, extra }) {
-  const typeLabel = PROMPT_BUILDER_TYPES.find((item) => item.id === type)?.label || "task";
-  const parts = [];
+function assemblePrompt({ type, otherTask, goal, audience, format, constraints, extra }) {
+  const typeLabel = type === "other"
+    ? otherTask || "custom task"
+    : PROMPT_BUILDER_TYPES.find((item) => item.id === type)?.label || "task";
 
+  const parts = [];
   parts.push(`You are helping me with a ${typeLabel.toLowerCase()} task.`);
   parts.push("Use plain English, be practical, and make the result easy to follow.");
   parts.push("");
 
+  if (type === "other" && otherTask) parts.push(`Task type\n${otherTask}`);
   if (goal) parts.push(`Goal\n${goal}`);
   if (audience) parts.push(`Audience / Use case\n${audience}`);
   if (format) parts.push(`Format\n${format}`);
@@ -217,15 +224,13 @@ export default function PromptBuilder() {
   const STEPS = [
     { key: "type", label: "Type" },
     { key: "goal", label: "Goal" },
-    { key: "audience", label: "Audience" },
-    { key: "format", label: "Format" },
-    { key: "constraints", label: "Avoid" },
-    { key: "extra", label: "Extra" },
+    { key: "details", label: "Details" },
     { key: "review", label: "Review" },
   ];
 
   const emptyForm = {
     type: "explain",
+    otherTask: "",
     goal: "",
     audience: "",
     format: "",
@@ -251,6 +256,7 @@ export default function PromptBuilder() {
   function loadTemplate(template) {
     setForm({
       type: template.type,
+      otherTask: template.otherTask,
       goal: template.goal,
       audience: template.audience,
       format: template.format,
@@ -287,7 +293,7 @@ export default function PromptBuilder() {
   }
 
   function savePrompt() {
-    const name = form.goal ? form.goal.slice(0, 60) : "Untitled prompt";
+    const name = form.goal ? form.goal.slice(0, 60) : form.otherTask || "Untitled prompt";
     setSaved((prev) => [{ name, form: { ...form }, id: Date.now() }, ...prev]);
     setSavedToast(true);
     clearTimeout(saveTimerRef.current);
@@ -354,7 +360,7 @@ export default function PromptBuilder() {
               marginBottom: 10,
             }}
           >
-            Guided Builder · 7 Steps
+            Guided Builder · 4 Steps
           </div>
           <h2
             style={{
@@ -379,7 +385,7 @@ export default function PromptBuilder() {
               maxWidth: 700,
             }}
           >
-            Answer a few simple questions. The Builder turns your situation into a prompt you can paste into ChatGPT or another AI tool with much more control than a blank box.
+            Pick a type, say what you need, add any useful details, then copy the finished prompt. It is lighter now, but still gives you room for unusual tasks.
           </p>
         </header>
 
@@ -410,27 +416,11 @@ export default function PromptBuilder() {
         >
           {current === 0 ? (
             <div>
-              <h3
-                style={{
-                  margin: "0 0 6px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: C.navy,
-                }}
-              >
+              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
                 What do you need help with?
               </h3>
-              <p
-                style={{
-                  margin: "0 0 20px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 14,
-                  color: C.muted,
-                  lineHeight: 1.55,
-                }}
-              >
-                Pick the closest match. This gives the prompt the right shape before we add your details.
+              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                Pick the closest match. If it does not fit the usual categories, choose Other and describe the task in your own words.
               </p>
 
               <div
@@ -440,7 +430,7 @@ export default function PromptBuilder() {
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
                   gap: 10,
-                  marginBottom: 24,
+                  marginBottom: 20,
                 }}
               >
                 {PROMPT_BUILDER_TYPES.map((type) => {
@@ -487,25 +477,11 @@ export default function PromptBuilder() {
                         >
                           {type.badge}
                         </span>
-                        <span
-                          style={{
-                            fontFamily: "'Outfit', sans-serif",
-                            fontSize: 15,
-                            fontWeight: 700,
-                            color: C.navy,
-                          }}
-                        >
+                        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 700, color: C.navy }}>
                           {type.label}
                         </span>
                       </div>
-                      <div
-                        style={{
-                          fontFamily: "'Outfit', sans-serif",
-                          fontSize: 12,
-                          color: C.muted,
-                          lineHeight: 1.45,
-                        }}
-                      >
+                      <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: C.muted, lineHeight: 1.45 }}>
                         {type.desc}
                       </div>
                     </button>
@@ -513,7 +489,18 @@ export default function PromptBuilder() {
                 })}
               </div>
 
-              <div>
+              {form.type === "other" ? (
+                <PromptBuilderTextarea
+                  value={form.otherTask}
+                  onChange={(value) => updateField("otherTask", value)}
+                  placeholder="Example: Help me turn my messy notes into a clear message for my support worker."
+                  rows={3}
+                  label="Other task"
+                  hint="Describe the kind of task this is so the builder knows how to frame the prompt."
+                />
+              ) : null}
+
+              <div style={{ marginTop: 24 }}>
                 <div
                   style={{
                     fontFamily: "'Space Mono', monospace",
@@ -582,79 +569,55 @@ export default function PromptBuilder() {
           ) : null}
 
           {current === 2 ? (
-            <div>
-              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                Who is this for?
-              </h3>
-              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                Tell the AI who will use the answer and how simple or detailed it should be.
-              </p>
+            <div style={{ display: "grid", gap: 18 }}>
+              <div>
+                <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
+                  Add the useful details
+                </h3>
+                <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                  This is the compact version. Everything that shapes the answer lives here in one place.
+                </p>
+              </div>
+
               <PromptBuilderTextarea
                 value={form.audience}
                 onChange={(value) => updateField("audience", value)}
                 placeholder="Example: I want this written for someone who is not technical and may feel stressed or confused."
-                rows={4}
+                rows={3}
+                label="Who is this for?"
                 hint="You can mention age, experience level, confidence, or the situation they are in."
+              />
+
+              <PromptBuilderTextarea
+                value={form.format}
+                onChange={(value) => updateField("format", value)}
+                placeholder="Example: Start with a short summary, then use bullet points, then finish with 3 practical next steps."
+                rows={3}
+                label="What should the answer look like?"
+                hint="Ask for bullet points, short paragraphs, a checklist, or step-by-step help."
+              />
+
+              <PromptBuilderTextarea
+                value={form.constraints}
+                onChange={(value) => updateField("constraints", value)}
+                placeholder="Example: Do not use jargon. Do not sound robotic. Do not make anything up if the information is unclear."
+                rows={3}
+                label="What should it avoid?"
+                hint="Say what would make the answer less useful for you."
+              />
+
+              <PromptBuilderTextarea
+                value={form.extra}
+                onChange={(value) => updateField("extra", value)}
+                placeholder="Example: Make it sound calm and reassuring. If there is a deadline, highlight it clearly. Keep the language very simple."
+                rows={4}
+                label="Other details or creative control"
+                hint="Use this for nuance, personal context, tone, examples, or anything outside of the norm."
               />
             </div>
           ) : null}
 
           {current === 3 ? (
-            <div>
-              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                What should the answer look like?
-              </h3>
-              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                Ask for bullet points, short paragraphs, step-by-step instructions, or whatever format helps you most.
-              </p>
-              <PromptBuilderTextarea
-                value={form.format}
-                onChange={(value) => updateField("format", value)}
-                placeholder="Example: Start with a short summary, then use bullet points, then finish with 3 practical next steps."
-                rows={5}
-                hint="This is where you shape the result into something easy to use."
-              />
-            </div>
-          ) : null}
-
-          {current === 4 ? (
-            <div>
-              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                What should it avoid?
-              </h3>
-              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                This helps the AI avoid answers that are too wordy, too robotic, too harsh, or just not useful.
-              </p>
-              <PromptBuilderTextarea
-                value={form.constraints}
-                onChange={(value) => updateField("constraints", value)}
-                placeholder="Example: Do not use jargon. Do not sound robotic. Do not make anything up if the information is unclear."
-                rows={5}
-                hint="Say what would make the answer less useful for you."
-              />
-            </div>
-          ) : null}
-
-          {current === 5 ? (
-            <div>
-              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                Anything else you want to add?
-              </h3>
-              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                This is your extra control box. Add tone, context, examples, or any small detail that will make the answer feel more like yours.
-              </p>
-              <PromptBuilderTextarea
-                value={form.extra}
-                onChange={(value) => updateField("extra", value)}
-                placeholder="Example: Make it sound calm and reassuring. If there is a deadline, highlight it clearly. Keep the language very simple."
-                rows={5}
-                label="Extra creative control"
-                hint="Use this for nuance that does not fit neatly into the earlier boxes."
-              />
-            </div>
-          ) : null}
-
-          {current === 6 ? (
             <div>
               <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
                 Review and copy
