@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import PromptBuilder from "../custom-prompt-builder/prompt-builder.jsx";
 
 const LIBRARY_CONFIG = {
   title: "What To Ask AI",
@@ -1877,6 +1878,24 @@ export default function AZLibraryTemplate() {
           >
             How to use
           </button>
+          <button
+            type="button"
+            className="top-nav-button"
+            onClick={() => setActiveView("builder")}
+            style={{
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: activeView === "builder" ? "#FFFFFF" : "rgba(255,255,255,0.08)",
+              color: activeView === "builder" ? "#1E1B2E" : "#FFFFFF",
+              borderRadius: 999,
+              minHeight: 38,
+              padding: "0 14px",
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Builder
+          </button>
         </div>
         <button
           className="mobile-search-toggle"
@@ -2055,6 +2074,29 @@ export default function AZLibraryTemplate() {
                 {copiedPromptTitle === "first beginner prompt" ? "Copied" : "Copy first prompt"}
               </button>
             </article>
+          </section>
+        ) : activeView === "builder" ? (
+          <section style={{ display: "grid", gap: 18 }}>
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid rgba(45,42,51,0.08)",
+                borderRadius: 18,
+                padding: 22,
+                boxShadow: "0 1px 4px rgba(45,42,51,0.04)",
+              }}
+            >
+              <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
+                New subproduct preview
+              </p>
+              <h2 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 30 }}>
+                Custom Prompt Builder
+              </h2>
+              <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555", maxWidth: 720 }}>
+                This takes the pack one step further. Instead of only choosing from pre-written prompts, the buyer can answer a few guided questions and generate a custom prompt tailored to their exact task, audience, format, and constraints.
+              </p>
+            </div>
+            <PromptBuilder />
           </section>
         ) : (
           <>
