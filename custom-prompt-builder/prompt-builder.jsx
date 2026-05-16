@@ -1,12 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const C = {
   bg: "#F5F2EC",
   navy: "#1A1A2E",
   pink: "#E8A0E8",
   green: "#7EECD4",
-  purple: "#B88CED",
-  lavender: "#C5B8E8",
   white: "#FFFFFF",
   muted: "#8A8680",
   border: "#D4CFC7",
@@ -14,52 +12,57 @@ const C = {
 };
 
 const PROMPT_BUILDER_TYPES = [
-  { id: "content", label: "Content", emoji: "✍️", desc: "Blog posts, captions, emails, scripts" },
-  { id: "image", label: "Image", emoji: "🖼️", desc: "Midjourney, DALL-E, Ideogram prompts" },
-  { id: "code", label: "Code", emoji: "💻", desc: "Components, scripts, refactors" },
-  { id: "analysis", label: "Analysis", emoji: "📊", desc: "Data reviews, feedback, audits" },
-  { id: "brainstorm", label: "Brainstorm", emoji: "💡", desc: "Ideas, angles, hooks, names" },
-  { id: "plan", label: "Plan", emoji: "🗺️", desc: "Strategies, launches, roadmaps" },
+  { id: "explain", label: "Explain", badge: "INFO", desc: "Letters, forms, jargon, and confusing messages" },
+  { id: "write", label: "Write", badge: "PEN", desc: "Emails, replies, polite messages, and wording help" },
+  { id: "decide", label: "Decide", badge: "CHK", desc: "Compare options, think clearly, and choose next steps" },
+  { id: "organize", label: "Organize", badge: "BOX", desc: "Lists, plans, admin tasks, and practical steps" },
+  { id: "safety", label: "Safety", badge: "SHD", desc: "Scam checks, red flags, and safer questions" },
+  { id: "create", label: "Create", badge: "IDEA", desc: "Build a custom prompt for something more specific" },
 ];
 
 const PROMPT_BUILDER_TEMPLATES = [
   {
-    name: "Instagram caption from a transcript",
-    type: "content",
-    goal: "Turn a 3-minute voice memo transcript into a scroll-stopping Instagram caption.",
-    audience: "Female coaches and creators aged 25 to 45 who follow me for business and mindset content.",
-    format: "One short hook (under 10 words), three paragraphs of body copy, one line break between each, end with a soft CTA asking a question. No emojis, no hashtags.",
-    constraints: "Keep it conversational. No em dashes. No repetitive staccato patterns. Do not oversell or use generic advice.",
+    name: "Explain a confusing letter",
+    type: "explain",
+    goal: "Explain a letter or message in plain English so I can understand what it means and what I need to do next.",
+    audience: "An everyday person who feels unsure, does not want jargon, and wants a calm, simple explanation.",
+    format: "Start with a short plain-English summary. Then list the key points. End with the next 3 steps I should take.",
+    constraints: "Do not use jargon. Keep the tone calm and clear. If something is uncertain, say so simply.",
+    extra: "If there is a deadline or amount of money involved, point it out clearly.",
   },
   {
-    name: "Midjourney ad image prompt",
-    type: "image",
-    goal: "Generate 5 on-brand Meta ad image prompts showing a coach at her desk working on her laptop.",
-    audience: "Prompt tool is Midjourney. Style should feel warm, editorial, lifestyle photography.",
-    format: "One full paragraph per prompt, 40 to 60 words each. Describe subject, setting, lighting, camera angle, and mood. End each with aspect ratio and style parameters.",
-    constraints: "No text in the image. No logos. Diverse representation across the 5 prompts. Natural daylight, not studio lighting.",
+    name: "Write a polite email reply",
+    type: "write",
+    goal: "Write a polite email reply that says what I need clearly without sounding rude or awkward.",
+    audience: "Someone replying to a business, landlord, school, service, or workplace message.",
+    format: "Write one short subject line if needed, then a clear email reply in simple language.",
+    constraints: "Keep it respectful. No overly formal phrases. No long paragraphs.",
+    extra: "Make it sound warm, calm, and confident.",
   },
   {
-    name: "React component refactor",
-    type: "code",
-    goal: "Refactor a long React component into smaller composable pieces without changing behavior.",
-    audience: "A mid-level React developer who knows hooks but not advanced patterns.",
-    format: "Return the refactored code in one code block. Add a short explanation above it listing what was extracted and why.",
-    constraints: "Do not add new dependencies. Keep the same file structure. Preserve all prop names exactly. Use function components with hooks only.",
+    name: "Compare two options clearly",
+    type: "decide",
+    goal: "Help me compare two choices and understand the pros, cons, risks, and best next step.",
+    audience: "Someone who feels stuck and wants help thinking clearly before making a decision.",
+    format: "Use a simple comparison with pros, cons, risks, and a short recommendation based on the information given.",
+    constraints: "Do not pretend to know facts that were not provided. Keep it balanced and practical.",
+    extra: "If more information is needed, list the questions I should answer before deciding.",
   },
   {
-    name: "Sales page audit",
-    type: "analysis",
-    goal: "Audit a sales page and give prioritized feedback on copy, structure, and conversion blockers.",
-    audience: "A coach or creator selling a $50 to $200 digital product. They wrote the page themselves.",
-    format: "Return feedback as a numbered list ordered by impact. For each item: what is wrong, why it hurts conversions, and one specific rewrite suggestion.",
-    constraints: "Be direct but kind. No generic advice. Cite specific sentences or sections from the page.",
+    name: "Check if something feels like a scam",
+    type: "safety",
+    goal: "Help me review a message, offer, or website and spot warning signs before I respond or pay.",
+    audience: "Someone who wants to stay safe online and avoid being pressured or tricked.",
+    format: "List the red flags, what looks normal, what I should verify myself, and the safest next step.",
+    constraints: "Do not guarantee that something is safe. Encourage checking trusted sources where needed.",
+    extra: "Use plain English and do not make me feel silly for checking.",
   },
 ];
 
 function PromptBuilderStepDot({ step, current, label, onClick }) {
   const isDone = step < current;
   const isActive = step === current;
+
   return (
     <button
       className="pb-btn"
@@ -86,7 +89,7 @@ function PromptBuilderStepDot({ step, current, label, onClick }) {
           borderRadius: "50%",
           background: isActive ? C.pink : isDone ? C.green : C.card,
           border: `2px solid ${isActive ? C.pink : isDone ? C.green : C.border}`,
-          color: isActive || isDone ? C.navy : C.muted,
+          color: C.navy,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -97,7 +100,7 @@ function PromptBuilderStepDot({ step, current, label, onClick }) {
         }}
         aria-hidden="true"
       >
-        {isDone ? "✓" : step + 1}
+        {isDone ? "OK" : step + 1}
       </div>
       <div
         style={{
@@ -120,7 +123,7 @@ function PromptBuilderStepDot({ step, current, label, onClick }) {
 function PromptBuilderTextarea({ value, onChange, placeholder, rows = 4, label, hint }) {
   return (
     <div>
-      {label && (
+      {label ? (
         <label
           style={{
             display: "block",
@@ -135,10 +138,10 @@ function PromptBuilderTextarea({ value, onChange, placeholder, rows = 4, label, 
         >
           {label}
         </label>
-      )}
+      ) : null}
       <textarea
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         rows={rows}
         style={{
@@ -156,16 +159,16 @@ function PromptBuilderTextarea({ value, onChange, placeholder, rows = 4, label, 
           boxSizing: "border-box",
           transition: "border-color 0.15s ease, box-shadow 0.15s ease",
         }}
-        onFocus={(e) => {
-          e.target.style.borderColor = C.pink;
-          e.target.style.boxShadow = `0 0 0 3px ${C.pink}30`;
+        onFocus={(event) => {
+          event.target.style.borderColor = C.pink;
+          event.target.style.boxShadow = `0 0 0 3px ${C.pink}30`;
         }}
-        onBlur={(e) => {
-          e.target.style.borderColor = C.border;
-          e.target.style.boxShadow = "none";
+        onBlur={(event) => {
+          event.target.style.borderColor = C.border;
+          event.target.style.boxShadow = "none";
         }}
       />
-      {hint && (
+      {hint ? (
         <div
           style={{
             fontFamily: "'Outfit', sans-serif",
@@ -177,27 +180,32 @@ function PromptBuilderTextarea({ value, onChange, placeholder, rows = 4, label, 
         >
           {hint}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
-function assemblePrompt({ type, goal, audience, format, constraints }) {
-  const typeLabel = PROMPT_BUILDER_TYPES.find((t) => t.id === type)?.label || "task";
+function assemblePrompt({ type, goal, audience, format, constraints, extra }) {
+  const typeLabel = PROMPT_BUILDER_TYPES.find((item) => item.id === type)?.label || "task";
   const parts = [];
+
   parts.push(`You are helping me with a ${typeLabel.toLowerCase()} task.`);
+  parts.push("Use plain English, be practical, and make the result easy to follow.");
   parts.push("");
-  if (goal) parts.push(`**Goal**\n${goal}`);
-  if (audience) parts.push(`**Audience / Use case**\n${audience}`);
-  if (format) parts.push(`**Format**\n${format}`);
-  if (constraints) parts.push(`**Constraints**\n${constraints}`);
+
+  if (goal) parts.push(`Goal\n${goal}`);
+  if (audience) parts.push(`Audience / Use case\n${audience}`);
+  if (format) parts.push(`Format\n${format}`);
+  if (constraints) parts.push(`Constraints\n${constraints}`);
+  if (extra) parts.push(`Anything else to include\n${extra}`);
+
   parts.push("");
-  parts.push("Return the result directly without preamble or summary.");
+  parts.push("Return the result directly in a clear, useful way without unnecessary preamble.");
+
   return parts.join("\n\n");
 }
 
 export default function PromptBuilder() {
-  // Load Google Fonts
   useEffect(() => {
     const link = document.createElement("link");
     link.href =
@@ -211,18 +219,22 @@ export default function PromptBuilder() {
     { key: "goal", label: "Goal" },
     { key: "audience", label: "Audience" },
     { key: "format", label: "Format" },
-    { key: "constraints", label: "Constraints" },
+    { key: "constraints", label: "Avoid" },
+    { key: "extra", label: "Extra" },
     { key: "review", label: "Review" },
   ];
 
-  const [current, setCurrent] = useState(0);
-  const [form, setForm] = useState({
-    type: "content",
+  const emptyForm = {
+    type: "explain",
     goal: "",
     audience: "",
     format: "",
     constraints: "",
-  });
+    extra: "",
+  };
+
+  const [current, setCurrent] = useState(0);
+  const [form, setForm] = useState(emptyForm);
   const [saved, setSaved] = useState([]);
   const [copied, setCopied] = useState(false);
   const [savedToast, setSavedToast] = useState(false);
@@ -236,19 +248,20 @@ export default function PromptBuilder() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function loadTemplate(tpl) {
+  function loadTemplate(template) {
     setForm({
-      type: tpl.type,
-      goal: tpl.goal,
-      audience: tpl.audience,
-      format: tpl.format,
-      constraints: tpl.constraints,
+      type: template.type,
+      goal: template.goal,
+      audience: template.audience,
+      format: template.format,
+      constraints: template.constraints,
+      extra: template.extra,
     });
     setCurrent(STEPS.length - 1);
   }
 
   function reset() {
-    setForm({ type: "content", goal: "", audience: "", format: "", constraints: "" });
+    setForm(emptyForm);
     setCurrent(0);
   }
 
@@ -257,24 +270,25 @@ export default function PromptBuilder() {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(assembledPrompt);
       } else {
-        const ta = document.createElement("textarea");
-        ta.value = assembledPrompt;
-        document.body.appendChild(ta);
-        ta.select();
+        const textarea = document.createElement("textarea");
+        textarea.value = assembledPrompt;
+        document.body.appendChild(textarea);
+        textarea.select();
         document.execCommand("copy");
-        document.body.removeChild(ta);
+        document.body.removeChild(textarea);
       }
+
       setCopied(true);
       clearTimeout(copyTimerRef.current);
       copyTimerRef.current = setTimeout(() => setCopied(false), 1800);
-    } catch (e) {
-      // silent fail
+    } catch {
+      // Silent fail for quick utility behavior.
     }
   }
 
   function savePrompt() {
     const name = form.goal ? form.goal.slice(0, 60) : "Untitled prompt";
-    setSaved((prev) => [{ name, form: { ...form }, assembled: assembledPrompt, id: Date.now() }, ...prev]);
+    setSaved((prev) => [{ name, form: { ...form }, id: Date.now() }, ...prev]);
     setSavedToast(true);
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => setSavedToast(false), 1600);
@@ -285,9 +299,11 @@ export default function PromptBuilder() {
     setCurrent(STEPS.length - 1);
   }
 
-  useEffect(() => () => {
-    clearTimeout(copyTimerRef.current);
-    clearTimeout(saveTimerRef.current);
+  useEffect(() => {
+    return () => {
+      clearTimeout(copyTimerRef.current);
+      clearTimeout(saveTimerRef.current);
+    };
   }, []);
 
   return (
@@ -317,7 +333,6 @@ export default function PromptBuilder() {
         }}
         aria-label="Prompt Builder wizard"
       >
-        {/* Header */}
         <header
           style={{
             background: C.navy,
@@ -339,7 +354,7 @@ export default function PromptBuilder() {
               marginBottom: 10,
             }}
           >
-            Guided Wizard · 6 Steps
+            Guided Builder · 7 Steps
           </div>
           <h2
             style={{
@@ -352,17 +367,7 @@ export default function PromptBuilder() {
               letterSpacing: "-0.01em",
             }}
           >
-            Build a prompt that{" "}
-            <span
-              style={{
-                background: `linear-gradient(135deg, ${C.pink}, ${C.purple}, ${C.green})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              works the first time
-            </span>
+            Build a custom prompt for real life tasks
           </h2>
           <p
             style={{
@@ -371,14 +376,13 @@ export default function PromptBuilder() {
               fontSize: 14,
               color: "rgba(255,255,255,0.7)",
               lineHeight: 1.55,
-              maxWidth: 620,
+              maxWidth: 700,
             }}
           >
-            Answer 5 quick questions. Watch your prompt assemble in real time. Copy it, paste it into any AI tool, get a usable result on the first try.
+            Answer a few simple questions. The Builder turns your situation into a prompt you can paste into ChatGPT or another AI tool with much more control than a blank box.
           </p>
         </header>
 
-        {/* Progress dots */}
         <nav
           aria-label="Wizard progress"
           style={{
@@ -389,24 +393,22 @@ export default function PromptBuilder() {
             borderBottom: `1px solid ${C.border}`,
           }}
         >
-          {STEPS.map((s, i) => (
+          {STEPS.map((step, index) => (
             <PromptBuilderStepDot
-              key={s.key}
-              step={i}
+              key={step.key}
+              step={index}
               current={current}
-              label={s.label}
-              onClick={() => setCurrent(i)}
+              label={step.label}
+              onClick={() => setCurrent(index)}
             />
           ))}
         </nav>
 
-        {/* Step content */}
         <section
           style={{ padding: "28px", background: C.white, borderBottom: `1px solid ${C.border}` }}
           aria-live="polite"
         >
-          {/* Step 0: Type */}
-          {current === 0 && (
+          {current === 0 ? (
             <div>
               <h3
                 style={{
@@ -417,7 +419,7 @@ export default function PromptBuilder() {
                   color: C.navy,
                 }}
               >
-                What are you creating?
+                What do you need help with?
               </h3>
               <p
                 style={{
@@ -428,7 +430,7 @@ export default function PromptBuilder() {
                   lineHeight: 1.55,
                 }}
               >
-                Pick the closest match. This sets the shape of your prompt.
+                Pick the closest match. This gives the prompt the right shape before we add your details.
               </p>
 
               <div
@@ -441,15 +443,16 @@ export default function PromptBuilder() {
                   marginBottom: 24,
                 }}
               >
-                {PROMPT_BUILDER_TYPES.map((t) => {
-                  const isSelected = form.type === t.id;
+                {PROMPT_BUILDER_TYPES.map((type) => {
+                  const isSelected = form.type === type.id;
+
                   return (
                     <button
-                      key={t.id}
+                      key={type.id}
                       className="pb-btn"
                       role="radio"
                       aria-checked={isSelected}
-                      onClick={() => updateField("type", t.id)}
+                      onClick={() => updateField("type", type.id)}
                       style={{
                         padding: "14px 16px",
                         background: isSelected ? `${C.pink}20` : C.card,
@@ -461,12 +464,28 @@ export default function PromptBuilder() {
                         flexDirection: "column",
                         gap: 4,
                         transition: "all 0.15s ease",
-                        minHeight: 76,
+                        minHeight: 92,
                       }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 18 }} aria-hidden="true">
-                          {t.emoji}
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            minWidth: 38,
+                            minHeight: 24,
+                            borderRadius: 999,
+                            background: C.white,
+                            border: `1px solid ${C.border}`,
+                            fontFamily: "'Space Mono', monospace",
+                            fontSize: 10,
+                            fontWeight: 700,
+                            color: C.navy,
+                          }}
+                          aria-hidden="true"
+                        >
+                          {type.badge}
                         </span>
                         <span
                           style={{
@@ -476,7 +495,7 @@ export default function PromptBuilder() {
                             color: C.navy,
                           }}
                         >
-                          {t.label}
+                          {type.label}
                         </span>
                       </div>
                       <div
@@ -487,14 +506,13 @@ export default function PromptBuilder() {
                           lineHeight: 1.45,
                         }}
                       >
-                        {t.desc}
+                        {type.desc}
                       </div>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Starter templates */}
               <div>
                 <div
                   style={{
@@ -507,7 +525,7 @@ export default function PromptBuilder() {
                     marginBottom: 10,
                   }}
                 >
-                  Or start from a template
+                  Or start from a ready-made example
                 </div>
                 <div
                   style={{
@@ -516,11 +534,11 @@ export default function PromptBuilder() {
                     gap: 8,
                   }}
                 >
-                  {PROMPT_BUILDER_TEMPLATES.map((tpl, i) => (
+                  {PROMPT_BUILDER_TEMPLATES.map((template, index) => (
                     <button
-                      key={i}
+                      key={index}
                       className="pb-btn"
-                      onClick={() => loadTemplate(tpl)}
+                      onClick={() => loadTemplate(template)}
                       style={{
                         padding: "12px 14px",
                         background: C.card,
@@ -537,178 +555,112 @@ export default function PromptBuilder() {
                         transition: "all 0.15s ease",
                       }}
                     >
-                      {tpl.name}
+                      {template.name}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
 
-          {/* Step 1: Goal */}
-          {current === 1 && (
+          {current === 1 ? (
             <div>
-              <h3
-                style={{
-                  margin: "0 0 6px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: C.navy,
-                }}
-              >
-                Describe the goal in one sentence
+              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
+                What do you want the AI to do?
               </h3>
-              <p
-                style={{
-                  margin: "0 0 20px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 14,
-                  color: C.muted,
-                  lineHeight: 1.55,
-                }}
-              >
-                What exactly do you want the AI to produce? Be specific. Include the deliverable and the outcome.
+              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                Describe the result you want in one or two clear sentences.
               </p>
               <PromptBuilderTextarea
                 value={form.goal}
-                onChange={(v) => updateField("goal", v)}
-                placeholder="Example: Write a 200-word Instagram caption that turns a coaching insight into a scroll-stopping story."
+                onChange={(value) => updateField("goal", value)}
+                placeholder="Example: Explain this council letter in simple language and tell me what I need to do next."
                 rows={4}
-                hint="Vague goals produce vague outputs. A sentence works better than a paragraph."
+                hint="Specific goals give better results than vague ones."
               />
             </div>
-          )}
+          ) : null}
 
-          {/* Step 2: Audience */}
-          {current === 2 && (
+          {current === 2 ? (
             <div>
-              <h3
-                style={{
-                  margin: "0 0 6px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: C.navy,
-                }}
-              >
+              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
                 Who is this for?
               </h3>
-              <p
-                style={{
-                  margin: "0 0 20px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 14,
-                  color: C.muted,
-                  lineHeight: 1.55,
-                }}
-              >
-                Who will read, see, or use the output? The more specific, the better the tone and vocabulary match.
+              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                Tell the AI who will use the answer and how simple or detailed it should be.
               </p>
               <PromptBuilderTextarea
                 value={form.audience}
-                onChange={(v) => updateField("audience", v)}
-                placeholder="Example: Female coaches aged 30 to 45 who follow me for business and marketing content. They know the basics and want tactical advice, not beginner explanations."
+                onChange={(value) => updateField("audience", value)}
+                placeholder="Example: I want this written for someone who is not technical and may feel stressed or confused."
                 rows={4}
-                hint="Include background, experience level, and what they already know."
+                hint="You can mention age, experience level, confidence, or the situation they are in."
               />
             </div>
-          )}
+          ) : null}
 
-          {/* Step 3: Format */}
-          {current === 3 && (
+          {current === 3 ? (
             <div>
-              <h3
-                style={{
-                  margin: "0 0 6px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: C.navy,
-                }}
-              >
-                How should the output be structured?
+              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
+                What should the answer look like?
               </h3>
-              <p
-                style={{
-                  margin: "0 0 20px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 14,
-                  color: C.muted,
-                  lineHeight: 1.55,
-                }}
-              >
-                Length, structure, tone. Format rules are what turn "pretty good" into usable.
+              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                Ask for bullet points, short paragraphs, step-by-step instructions, or whatever format helps you most.
               </p>
               <PromptBuilderTextarea
                 value={form.format}
-                onChange={(v) => updateField("format", v)}
-                placeholder="Example: One short hook under 10 words. Three paragraphs of body copy with a line break between each. End with a soft CTA question. Conversational tone."
+                onChange={(value) => updateField("format", value)}
+                placeholder="Example: Start with a short summary, then use bullet points, then finish with 3 practical next steps."
                 rows={5}
-                hint="Specify word counts, paragraph structure, bullet formats, and tone."
+                hint="This is where you shape the result into something easy to use."
               />
             </div>
-          )}
+          ) : null}
 
-          {/* Step 4: Constraints */}
-          {current === 4 && (
+          {current === 4 ? (
             <div>
-              <h3
-                style={{
-                  margin: "0 0 6px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: C.navy,
-                }}
-              >
+              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
                 What should it avoid?
               </h3>
-              <p
-                style={{
-                  margin: "0 0 20px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 14,
-                  color: C.muted,
-                  lineHeight: 1.55,
-                }}
-              >
-                The "do not do this" list. Constraints are where most prompts leak. Be explicit.
+              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                This helps the AI avoid answers that are too wordy, too robotic, too harsh, or just not useful.
               </p>
               <PromptBuilderTextarea
                 value={form.constraints}
-                onChange={(v) => updateField("constraints", v)}
-                placeholder="Example: No em dashes. No hyperbolic salesy language. No generic advice. Do not use emojis or hashtags. Avoid repetitive staccato patterns."
+                onChange={(value) => updateField("constraints", value)}
+                placeholder="Example: Do not use jargon. Do not sound robotic. Do not make anything up if the information is unclear."
                 rows={5}
-                hint="Banned words, tones, formats, or topics. Things that would ruin the output if left in."
+                hint="Say what would make the answer less useful for you."
               />
             </div>
-          )}
+          ) : null}
 
-          {/* Step 5: Review */}
-          {current === 5 && (
+          {current === 5 ? (
             <div>
-              <h3
-                style={{
-                  margin: "0 0 6px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: C.navy,
-                }}
-              >
+              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
+                Anything else you want to add?
+              </h3>
+              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                This is your extra control box. Add tone, context, examples, or any small detail that will make the answer feel more like yours.
+              </p>
+              <PromptBuilderTextarea
+                value={form.extra}
+                onChange={(value) => updateField("extra", value)}
+                placeholder="Example: Make it sound calm and reassuring. If there is a deadline, highlight it clearly. Keep the language very simple."
+                rows={5}
+                label="Extra creative control"
+                hint="Use this for nuance that does not fit neatly into the earlier boxes."
+              />
+            </div>
+          ) : null}
+
+          {current === 6 ? (
+            <div>
+              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
                 Review and copy
               </h3>
-              <p
-                style={{
-                  margin: "0 0 20px 0",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 14,
-                  color: C.muted,
-                  lineHeight: 1.55,
-                }}
-              >
-                This is your finished prompt. Copy it and paste into Claude, ChatGPT, or any AI tool.
+              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                This is your finished prompt. Copy it and paste it into ChatGPT or another AI tool.
               </p>
 
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
@@ -734,7 +686,7 @@ export default function PromptBuilder() {
                     transition: "background 0.2s ease",
                   }}
                 >
-                  <span aria-hidden="true">{copied ? "✓" : "📋"}</span>
+                  <span>{copied ? "OK" : "COPY"}</span>
                   <span>{copied ? "Copied to clipboard" : "Copy Prompt"}</span>
                 </button>
                 <button
@@ -758,7 +710,7 @@ export default function PromptBuilder() {
                     gap: 8,
                   }}
                 >
-                  <span aria-hidden="true">💾</span>
+                  <span>{savedToast ? "SAVED" : "SAVE"}</span>
                   <span>{savedToast ? "Saved" : "Save Prompt"}</span>
                 </button>
                 <button
@@ -782,15 +734,14 @@ export default function PromptBuilder() {
                     gap: 8,
                   }}
                 >
-                  <span aria-hidden="true">↺</span>
+                  <span>RESET</span>
                   <span>Start Over</span>
                 </button>
               </div>
             </div>
-          )}
+          ) : null}
         </section>
 
-        {/* Live preview */}
         <section
           style={{ padding: "24px 28px", background: C.card, borderBottom: `1px solid ${C.border}` }}
           aria-labelledby="pb-preview"
@@ -842,8 +793,7 @@ export default function PromptBuilder() {
           </pre>
         </section>
 
-        {/* Saved prompts sidebar-style list */}
-        {saved.length > 0 && (
+        {saved.length > 0 ? (
           <section
             style={{ padding: "24px 28px", background: C.white, borderBottom: `1px solid ${C.border}` }}
             aria-labelledby="pb-saved"
@@ -886,8 +836,16 @@ export default function PromptBuilder() {
                     gap: 10,
                   }}
                 >
-                  <span style={{ fontSize: 16 }} aria-hidden="true">
-                    {PROMPT_BUILDER_TYPES.find((t) => t.id === item.form.type)?.emoji || "📝"}
+                  <span
+                    style={{
+                      fontFamily: "'Space Mono', monospace",
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: C.muted,
+                    }}
+                    aria-hidden="true"
+                  >
+                    {PROMPT_BUILDER_TYPES.find((type) => type.id === item.form.type)?.badge || "SAVE"}
                   </span>
                   <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {item.name}
@@ -903,15 +861,14 @@ export default function PromptBuilder() {
                       flexShrink: 0,
                     }}
                   >
-                    Load →
+                    Load
                   </span>
                 </button>
               ))}
             </div>
           </section>
-        )}
+        ) : null}
 
-        {/* Wizard nav */}
         <div
           style={{
             padding: "20px 28px",
@@ -924,7 +881,7 @@ export default function PromptBuilder() {
         >
           <button
             className="pb-btn"
-            onClick={() => setCurrent((c) => Math.max(0, c - 1))}
+            onClick={() => setCurrent((step) => Math.max(0, step - 1))}
             disabled={current === 0}
             style={{
               padding: "12px 20px",
@@ -942,7 +899,7 @@ export default function PromptBuilder() {
               minHeight: 44,
             }}
           >
-            ← Back
+            Back
           </button>
 
           <div
@@ -961,7 +918,7 @@ export default function PromptBuilder() {
 
           <button
             className="pb-btn"
-            onClick={() => setCurrent((c) => Math.min(STEPS.length - 1, c + 1))}
+            onClick={() => setCurrent((step) => Math.min(STEPS.length - 1, step + 1))}
             disabled={isFinalStep}
             style={{
               padding: "12px 20px",
@@ -979,16 +936,10 @@ export default function PromptBuilder() {
               minHeight: 44,
             }}
           >
-            Next →
+            Next
           </button>
         </div>
       </main>
     </div>
   );
 }
-
-
-// ============================================================
-// COACH GROWTH COMPANY LEGAL FOOTER
-// ============================================================
-

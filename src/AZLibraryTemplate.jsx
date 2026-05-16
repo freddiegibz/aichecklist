@@ -7,7 +7,7 @@ const LIBRARY_CONFIG = {
   description: "Choose your situation, copy the prompt, and know exactly what to ask AI.",
 };
 
-const BUILDER_PASSWORD = import.meta.env.VITE_BUILDER_PASSWORD || "change-me";
+const BUILDER_PASSWORD = import.meta.env.VITE_BUILDER_PASSWORD || "AIConfidenceXXX";
 const BUILDER_UNLOCK_KEY = "builder-unlocked";
 
 const categories = [
