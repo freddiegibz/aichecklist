@@ -1746,7 +1746,10 @@ export default function AZLibraryTemplate() {
           justify-content: flex-start;
           overflow-x: auto;
           width: min(1120px, calc(100vw - 40px));
-          margin: 0 auto 28px;
+          position: relative;
+          left: 50%;
+          transform: translateX(-50%);
+          margin: 0 0 28px;
           padding: 0 4px 8px;
           scrollbar-width: none;
           -ms-overflow-style: none;
@@ -1787,6 +1790,9 @@ export default function AZLibraryTemplate() {
             padding: 0 12px;
           }
           .category-scroll {
+            position: static;
+            left: auto;
+            transform: none;
             width: auto;
             margin-left: -20px;
             margin-right: -20px;
