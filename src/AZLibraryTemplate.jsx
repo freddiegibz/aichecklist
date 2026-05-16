@@ -1666,6 +1666,7 @@ export default function AZLibraryTemplate() {
   const [copiedPromptTitle, setCopiedPromptTitle] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeView, setActiveView] = useState("library");
 
   const visiblePrompts = useMemo(
     () => {
@@ -1702,6 +1703,12 @@ export default function AZLibraryTemplate() {
         .category-pill:hover { transform: translateY(-1px); }
         .help-links a { transition: all 0.18s ease; }
         .help-links a:hover { transform: translateY(-1px); }
+        .top-nav-button {
+          transition: all 0.18s ease;
+        }
+        .top-nav-button:hover {
+          transform: translateY(-1px);
+        }
         .mobile-search-toggle,
         .mobile-search-panel {
           display: none;
@@ -1710,6 +1717,12 @@ export default function AZLibraryTemplate() {
         @media (max-width: 640px) {
           .library-header {
             padding: 24px 16px 28px !important;
+          }
+
+          .top-nav {
+            position: static !important;
+            justify-content: flex-start;
+            margin: 0 52px 18px 0;
           }
 
           .help-panel {
@@ -1808,6 +1821,44 @@ export default function AZLibraryTemplate() {
       `}</style>
 
       <header className="library-header" style={{ background: "linear-gradient(135deg, #1E1B2E, #2A2540)", padding: "48px 20px 34px", textAlign: "center", position: "relative" }}>
+        <div className="top-nav" style={{ position: "absolute", top: 18, left: 20, display: "flex", gap: 8 }}>
+          <button
+            type="button"
+            className="top-nav-button"
+            onClick={() => setActiveView("library")}
+            style={{
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: activeView === "library" ? "#FFFFFF" : "rgba(255,255,255,0.08)",
+              color: activeView === "library" ? "#1E1B2E" : "#FFFFFF",
+              borderRadius: 999,
+              minHeight: 38,
+              padding: "0 14px",
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Prompt pack
+          </button>
+          <button
+            type="button"
+            className="top-nav-button"
+            onClick={() => setActiveView("guide")}
+            style={{
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: activeView === "guide" ? "#FFFFFF" : "rgba(255,255,255,0.08)",
+              color: activeView === "guide" ? "#1E1B2E" : "#FFFFFF",
+              borderRadius: 999,
+              minHeight: 38,
+              padding: "0 14px",
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            How to use
+          </button>
+        </div>
         <button
           className="mobile-search-toggle"
           type="button"
@@ -1859,6 +1910,127 @@ export default function AZLibraryTemplate() {
       </header>
 
       <main style={{ maxWidth: 760, margin: "0 auto", padding: "26px 20px 48px" }}>
+        {activeView === "guide" ? (
+          <section style={{ display: "grid", gap: 18 }}>
+            <div>
+              <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
+                Start here
+              </p>
+              <h2 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 30 }}>
+                How to use your prompt pack
+              </h2>
+              <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555" }}>
+                If you have never used AI before, you are in the right place. This page walks you from installing ChatGPT to sending your first useful prompt.
+              </p>
+            </div>
+
+            {[
+              {
+                title: "1. Install ChatGPT",
+                body: (
+                  <>
+                    Open the official ChatGPT download page, choose the version for your device, then create or sign in to your account.
+                    <div style={{ marginTop: 12 }}>
+                      <a href="https://openai.com/chatgpt/download/" target="_blank" rel="noreferrer" style={{ color: "#FFFFFF", background: "#7C6BC4", textDecoration: "none", display: "inline-flex", alignItems: "center", minHeight: 42, padding: "0 16px", borderRadius: 999, fontWeight: 700 }}>
+                        Get ChatGPT
+                      </a>
+                    </div>
+                  </>
+                ),
+              },
+              {
+                title: "2. Know what a prompt is",
+                body: "A prompt is simply the message you type into ChatGPT. It can be a question, an instruction, or a piece of information you want help with. Example: “Explain this letter in plain English.”",
+              },
+              {
+                title: "3. What you bought",
+                body: "This pack is a library of ready-made prompts for everyday situations: confusing letters, messages, decisions, forms, scams, and more. You do not need to invent the wording yourself — you choose the closest prompt and use it as your starting point.",
+              },
+              {
+                title: "4. How to use a prompt from the pack",
+                body: "Open a category, choose a prompt, tap it open, then copy the prompt text. Paste it into ChatGPT. Replace any words in square brackets with your own details before sending it.",
+              },
+              {
+                title: "5. Your first run-through",
+                body: "Example: if you receive a letter you do not understand, open “Explaining Confusing Things,” choose a prompt about explaining text, copy it, paste the letter where the prompt asks, then send it. ChatGPT replies with a clearer explanation you can read and ask follow-up questions about.",
+              },
+              {
+                title: "6. A few good habits",
+                body: "Do not share passwords, bank details, or anything highly private. If an answer matters a lot — money, health, legal issues, safety — use ChatGPT to help you understand, then check with a trusted person or professional before acting.",
+              },
+            ].map((step) => (
+              <article
+                key={step.title}
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(45,42,51,0.08)",
+                  borderRadius: 18,
+                  padding: 20,
+                  boxShadow: "0 1px 4px rgba(45,42,51,0.04)",
+                }}
+              >
+                <h3 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 22 }}>
+                  {step.title}
+                </h3>
+                <div style={{ lineHeight: 1.7, color: "#4A4555" }}>{step.body}</div>
+              </article>
+            ))}
+
+            <article
+              style={{
+                background: "#1E1B2E",
+                color: "#FFFFFF",
+                borderRadius: 22,
+                padding: 22,
+              }}
+            >
+              <p style={{ margin: "0 0 8px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
+                Try this first
+              </p>
+              <h3 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 24 }}>
+                Send one simple prompt now
+              </h3>
+              <p style={{ margin: "0 0 16px", lineHeight: 1.7, color: "#C5C0CC" }}>
+                Copy this into ChatGPT exactly as it is. It is a safe first test, and it shows you how AI responds to a clear instruction.
+              </p>
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: 16,
+                  padding: 16,
+                  lineHeight: 1.7,
+                  marginBottom: 16,
+                }}
+              >
+                Please explain what a prompt is in very simple language, as if I have never used AI before.
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  copyPrompt(
+                    "first beginner prompt",
+                    "Please explain what a prompt is in very simple language, as if I have never used AI before."
+                  )
+                }
+                style={{
+                  border: "none",
+                  background: copiedPromptTitle === "first beginner prompt" ? "#FFFFFF" : "#E8845C",
+                  color: copiedPromptTitle === "first beginner prompt" ? "#1E1B2E" : "#FFFFFF",
+                  borderRadius: 999,
+                  minHeight: 44,
+                  padding: "0 18px",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {copiedPromptTitle === "first beginner prompt" ? "Copied" : "Copy first prompt"}
+              </button>
+            </article>
+          </section>
+        ) : (
+          <>
         <nav className="category-scroll" aria-label="Prompt categories" style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginBottom: 28 }}>
           {categories.map((category) => {
             const isActive = activeCategory === category;
@@ -2003,6 +2175,8 @@ export default function AZLibraryTemplate() {
             )})}
           </div>
         </section>
+          </>
+        )}
       </main>
     </div>
   );
