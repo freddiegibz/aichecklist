@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PromptBuilder from "../custom-prompt-builder/prompt-builder.jsx";
 
 const LIBRARY_CONFIG = {
@@ -6,6 +6,9 @@ const LIBRARY_CONFIG = {
   subtitle: "Prompt Library",
   description: "Choose your situation, copy the prompt, and know exactly what to ask AI.",
 };
+
+const BUILDER_PASSWORD = import.meta.env.VITE_BUILDER_PASSWORD || "change-me";
+const BUILDER_UNLOCK_KEY = "builder-unlocked";
 
 const categories = [
   "Explaining Confusing Things",
@@ -1668,6 +1671,17 @@ export default function AZLibraryTemplate() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeView, setActiveView] = useState("library");
+  const [builderPasswordInput, setBuilderPasswordInput] = useState("");
+  const [builderUnlocked, setBuilderUnlocked] = useState(false);
+  const [builderPasswordError, setBuilderPasswordError] = useState("");
+
+  useEffect(() => {
+    try {
+      setBuilderUnlocked(window.localStorage.getItem(BUILDER_UNLOCK_KEY) === "true");
+    } catch {
+      setBuilderUnlocked(false);
+    }
+  }, []);
 
   const visiblePrompts = useMemo(
     () => {
@@ -1691,6 +1705,25 @@ export default function AZLibraryTemplate() {
     await navigator.clipboard.writeText(text);
     setCopiedPromptTitle(title);
     setTimeout(() => setCopiedPromptTitle(null), 1600);
+  };
+
+  const unlockBuilder = (event) => {
+    event.preventDefault();
+
+    if (builderPasswordInput === BUILDER_PASSWORD) {
+      setBuilderUnlocked(true);
+      setBuilderPasswordError("");
+      setBuilderPasswordInput("");
+
+      try {
+        window.localStorage.setItem(BUILDER_UNLOCK_KEY, "true");
+      } catch {
+        // ignore storage failures in quick-lock mode
+      }
+      return;
+    }
+
+    setBuilderPasswordError("That password is not correct.");
   };
 
   return (
@@ -2102,7 +2135,73 @@ export default function AZLibraryTemplate() {
                 This takes the pack one step further. Instead of only choosing from pre-written prompts, the buyer can answer a few guided questions and generate a custom prompt tailored to their exact task, audience, format, and constraints.
               </p>
             </div>
-            <PromptBuilder />
+            {builderUnlocked ? (
+              <PromptBuilder />
+            ) : (
+              <article
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(45,42,51,0.08)",
+                  borderRadius: 18,
+                  padding: 24,
+                  boxShadow: "0 1px 4px rgba(45,42,51,0.04)",
+                }}
+              >
+                <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
+                  Locked subproduct
+                </p>
+                <h3 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 28 }}>
+                  Enter password to open the Builder
+                </h3>
+                <p style={{ margin: "0 0 18px", lineHeight: 1.7, color: "#4A4555", maxWidth: 560 }}>
+                  This is a lightweight client-side lock for now, useful for separating the Builder from the main pack while we test the product shape.
+                </p>
+                <form onSubmit={unlockBuilder} style={{ display: "grid", gap: 12, maxWidth: 420 }}>
+                  <input
+                    type="password"
+                    value={builderPasswordInput}
+                    onChange={(event) => {
+                      setBuilderPasswordInput(event.target.value);
+                      if (builderPasswordError) setBuilderPasswordError("");
+                    }}
+                    placeholder="Enter builder password"
+                    aria-label="Builder password"
+                    style={{
+                      width: "100%",
+                      minHeight: 46,
+                      border: "1px solid rgba(45,42,51,0.12)",
+                      borderRadius: 999,
+                      padding: "0 16px",
+                      background: "#FFFFFF",
+                      color: "#2D2A33",
+                      outline: "none",
+                      fontSize: 14,
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                    <button
+                      type="submit"
+                      style={{
+                        border: "none",
+                        background: "#1E1B2E",
+                        color: "#FFFFFF",
+                        borderRadius: 999,
+                        minHeight: 44,
+                        padding: "0 18px",
+                        fontSize: 14,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Unlock Builder
+                    </button>
+                    {builderPasswordError ? (
+                      <span style={{ color: "#A03D3D", fontSize: 13 }}>{builderPasswordError}</span>
+                    ) : null}
+                  </div>
+                </form>
+              </article>
+            )}
           </section>
         ) : (
           <>
