@@ -2132,7 +2132,7 @@ export default function AZLibraryTemplate() {
                 Custom Prompt Builder
               </h2>
               <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555", maxWidth: 720 }}>
-                This takes the pack one step further. Instead of only choosing from pre-written prompts, the buyer can answer a few guided questions and generate a custom prompt tailored to their exact task, audience, format, and constraints.
+                This takes the pack one step further. If your situation does not fit the core prompt pack, the Builder helps you describe what is going on and turns it into a clear, ready-to-use AI prompt.
               </p>
             </div>
             {builderUnlocked ? (
@@ -2148,15 +2148,16 @@ export default function AZLibraryTemplate() {
                 }}
               >
                 <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
-                  Locked subproduct
+                  Access required
                 </p>
                 <h3 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 28 }}>
-                  Enter password to open the Builder
+                  Enter your password or unlock the Builder
                 </h3>
                 <p style={{ margin: "0 0 18px", lineHeight: 1.7, color: "#4A4555", maxWidth: 560 }}>
-                  This is a lightweight client-side lock for now, useful for separating the Builder from the main pack while we test the product shape.
+                  Already bought the Custom Prompt Builder? Enter your password below. If not, you can buy access here and use it to create a prompt for situations outside the main pack.
                 </p>
-                <form onSubmit={unlockBuilder} style={{ display: "grid", gap: 12, maxWidth: 420 }}>
+                <div style={{ display: "grid", gap: 18, maxWidth: 720 }}>
+                  <form onSubmit={unlockBuilder} style={{ display: "grid", gap: 12, maxWidth: 420 }}>
                   <input
                     type="password"
                     value={builderPasswordInput}
@@ -2199,7 +2200,52 @@ export default function AZLibraryTemplate() {
                       <span style={{ color: "#A03D3D", fontSize: 13 }}>{builderPasswordError}</span>
                     ) : null}
                   </div>
-                </form>
+                  </form>
+
+                  <div
+                    style={{
+                      background: "#FAF6F1",
+                      border: "1px solid rgba(45,42,51,0.08)",
+                      borderRadius: 16,
+                      padding: 18,
+                      display: "grid",
+                      gap: 12,
+                      maxWidth: 520,
+                    }}
+                  >
+                    <p style={{ margin: 0, fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#7C6BC4" }}>
+                      Need access?
+                    </p>
+                    <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555" }}>
+                      Buy the Custom Prompt Builder to unlock a simple guided tool for creating prompts for unusual, messy, or outside-the-norm situations.
+                    </p>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                      <a
+                        href="https://buy.stripe.com/dRm5kCgDpcsI6es31EbZe0P"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: 44,
+                          padding: "0 18px",
+                          borderRadius: 999,
+                          background: "#1E1B2E",
+                          color: "#FFFFFF",
+                          textDecoration: "none",
+                          fontSize: 14,
+                          fontWeight: 700,
+                        }}
+                      >
+                        Buy the Builder
+                      </a>
+                      <span style={{ color: "#8A8680", fontSize: 13 }}>
+                        Instant access after purchase
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </article>
             )}
           </section>
