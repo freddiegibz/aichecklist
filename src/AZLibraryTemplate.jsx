@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 const LIBRARY_CONFIG = {
   title: "What To Ask AI",
   subtitle: "Prompt Library",
-  description: "Choose the situation you are in, then grab a prompt that helps you move faster.",
+  description: "Choose your situation, copy the prompt, and know exactly what to ask AI.",
 };
 
 const categories = [
