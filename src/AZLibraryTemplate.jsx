@@ -1685,10 +1685,66 @@ export default function AZLibraryTemplate() {
         button { font-family: inherit; }
         .category-pill { transition: all 0.18s ease; }
         .category-pill:hover { transform: translateY(-1px); }
+        .help-links a { transition: all 0.18s ease; }
+        .help-links a:hover { transform: translateY(-1px); }
+
+        @media (max-width: 640px) {
+          .library-header {
+            padding: 24px 16px 28px !important;
+          }
+
+          .help-panel {
+            position: static !important;
+            margin: 0 0 22px;
+            text-align: left !important;
+          }
+
+          .help-links {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: nowrap;
+          }
+
+          .help-links a {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.1);
+            color: #FFFFFF !important;
+            font-size: 12px !important;
+            font-weight: 700;
+            white-space: nowrap;
+          }
+
+          .category-scroll {
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto;
+            margin-left: -20px;
+            margin-right: -20px;
+            padding: 0 20px 6px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+
+          .category-scroll::-webkit-scrollbar {
+            display: none;
+          }
+
+          .category-pill {
+            flex: 0 0 auto;
+            white-space: nowrap;
+          }
+        }
       `}</style>
 
-      <header style={{ background: "linear-gradient(135deg, #1E1B2E, #2A2540)", padding: "48px 20px 34px", textAlign: "center", position: "relative" }}>
+      <header className="library-header" style={{ background: "linear-gradient(135deg, #1E1B2E, #2A2540)", padding: "48px 20px 34px", textAlign: "center", position: "relative" }}>
         <div
+          className="help-panel"
           style={{
             position: "absolute",
             top: 18,
@@ -1698,12 +1754,14 @@ export default function AZLibraryTemplate() {
           }}
         >
           <p style={{ margin: "0 0 6px", fontSize: 12, fontWeight: 700 }}>Want 1:1 AI Help?</p>
-          <a href="mailto:adsbyalfred@protonmail.com" style={{ display: "block", color: "#C5C0CC", fontSize: 12, textDecoration: "none", marginBottom: 3 }}>
-            adsbyalfred@protonmail.com
-          </a>
-          <a href="https://wa.me/447428523955" style={{ display: "block", color: "#C5C0CC", fontSize: 12, textDecoration: "none" }}>
-            WhatsApp +07428523955
-          </a>
+          <div className="help-links">
+            <a href="mailto:adsbyalfred@protonmail.com" style={{ display: "block", color: "#C5C0CC", fontSize: 12, textDecoration: "none", marginBottom: 3 }}>
+              Email
+            </a>
+            <a href="https://wa.me/447428523955" style={{ display: "block", color: "#C5C0CC", fontSize: 12, textDecoration: "none" }}>
+              WhatsApp
+            </a>
+          </div>
         </div>
         <p style={{ margin: "0 0 14px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#E8845C" }}>
           {LIBRARY_CONFIG.subtitle}
@@ -1717,7 +1775,7 @@ export default function AZLibraryTemplate() {
       </header>
 
       <main style={{ maxWidth: 760, margin: "0 auto", padding: "26px 20px 48px" }}>
-        <nav aria-label="Prompt categories" style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginBottom: 28 }}>
+        <nav className="category-scroll" aria-label="Prompt categories" style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginBottom: 28 }}>
           {categories.map((category) => {
             const isActive = activeCategory === category;
             return (
