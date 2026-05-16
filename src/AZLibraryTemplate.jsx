@@ -1703,6 +1703,26 @@ export default function AZLibraryTemplate() {
         .category-pill:hover { transform: translateY(-1px); }
         .help-links a { transition: all 0.18s ease; }
         .help-links a:hover { transform: translateY(-1px); }
+        .help-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          min-height: 42px;
+          padding: 0 14px;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.18);
+          background: rgba(255,255,255,0.08);
+          color: #FFFFFF;
+          font-size: 12px;
+          font-weight: 700;
+          text-decoration: none;
+          white-space: nowrap;
+        }
+        .help-link-icon {
+          width: 16px;
+          height: 16px;
+          flex: 0 0 auto;
+        }
         .top-nav-button {
           transition: all 0.18s ease;
         }
@@ -1738,18 +1758,9 @@ export default function AZLibraryTemplate() {
             flex-wrap: nowrap;
           }
 
-          .help-links a {
-            display: inline-flex !important;
-            align-items: center;
-            justify-content: center;
+          .help-link {
             min-height: 38px;
             padding: 0 12px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.1);
-            color: #FFFFFF !important;
-            font-size: 12px !important;
-            font-weight: 700;
-            white-space: nowrap;
           }
 
           .category-scroll {
@@ -1880,10 +1891,18 @@ export default function AZLibraryTemplate() {
         >
           <p style={{ margin: "0 0 6px", fontSize: 12, fontWeight: 700 }}>Want 1:1 AI Help?</p>
           <div className="help-links">
-            <a href="mailto:adsbyalfred@protonmail.com" style={{ display: "block", color: "#C5C0CC", fontSize: 12, textDecoration: "none", marginBottom: 3 }}>
+            <a className="help-link" href="mailto:adsbyalfred@protonmail.com">
+              <svg className="help-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6.5h16A1.5 1.5 0 0 1 21.5 8v8A1.5 1.5 0 0 1 20 17.5H4A1.5 1.5 0 0 1 2.5 16V8A1.5 1.5 0 0 1 4 6.5Z" stroke="currentColor" strokeWidth="1.8" />
+                <path d="m3.5 7.5 8.5 6 8.5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               Email
             </a>
-            <a href="https://wa.me/447428523955" style={{ display: "block", color: "#C5C0CC", fontSize: 12, textDecoration: "none" }}>
+            <a className="help-link" href="https://wa.me/447428523955" target="_blank" rel="noreferrer">
+              <svg className="help-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 4.5A7.5 7.5 0 0 0 6.2 16.7L5.5 20l3.5-.7A7.5 7.5 0 1 0 12 4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M9.3 9.6c.2-.4.4-.5.7-.5h.7c.2 0 .5.1.7.4l.9 1.4c.1.2.1.4 0 .6l-.5.7c-.1.1-.1.3 0 .5.3.6.8 1.2 1.3 1.7.2.2.4.2.6.1l.8-.4c.2-.1.4-.1.6 0l1.5.8c.3.1.4.4.4.7 0 1-.8 1.7-1.8 1.7-4.2 0-7.6-3.4-7.6-7.6 0-1 .8-1.7 1.8-1.7.3 0 .5.1.7.4l.5 1.1Z" fill="currentColor" />
+              </svg>
               WhatsApp
             </a>
           </div>
