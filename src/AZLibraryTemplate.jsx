@@ -1733,56 +1733,64 @@ export default function AZLibraryTemplate() {
         .mobile-search-panel {
           display: none;
         }
+        .library-shell {
+          max-width: 760px;
+          margin: 0 auto;
+          padding: 26px 20px 48px;
+        }
+        .category-scroll {
+          display: flex;
+          gap: 10px;
+          flex-wrap: nowrap;
+          justify-content: flex-start;
+          overflow-x: auto;
+          width: min(1120px, calc(100vw - 40px));
+          margin: 0 auto 28px;
+          padding: 0 4px 8px;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .category-scroll::-webkit-scrollbar {
+          display: none;
+        }
+        .category-pill {
+          flex: 0 0 auto;
+          white-space: nowrap;
+        }
 
         @media (max-width: 640px) {
           .library-header {
             padding: 24px 16px 28px !important;
           }
-
+          .library-shell {
+            padding: 26px 20px 48px;
+          }
           .top-nav {
             position: static !important;
             justify-content: flex-start;
             margin: 0 52px 18px 0;
           }
-
           .help-panel {
             position: static !important;
             margin: 0 0 22px;
             text-align: left !important;
           }
-
           .help-links {
             display: flex;
             gap: 8px;
             align-items: center;
             flex-wrap: nowrap;
           }
-
           .help-link {
             min-height: 38px;
             padding: 0 12px;
           }
-
           .category-scroll {
-            justify-content: flex-start !important;
-            flex-wrap: nowrap !important;
-            overflow-x: auto;
+            width: auto;
             margin-left: -20px;
             margin-right: -20px;
             padding: 0 20px 6px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
           }
-
-          .category-scroll::-webkit-scrollbar {
-            display: none;
-          }
-
-          .category-pill {
-            flex: 0 0 auto;
-            white-space: nowrap;
-          }
-
           .mobile-search-toggle {
             display: inline-flex;
             position: absolute;
@@ -1928,7 +1936,7 @@ export default function AZLibraryTemplate() {
         </p>
       </header>
 
-      <main style={{ maxWidth: 760, margin: "0 auto", padding: "26px 20px 48px" }}>
+      <main className="library-shell">
         {activeView === "guide" ? (
           <section style={{ display: "grid", gap: 18 }}>
             <div>
@@ -2050,7 +2058,7 @@ export default function AZLibraryTemplate() {
           </section>
         ) : (
           <>
-        <nav className="category-scroll" aria-label="Prompt categories" style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginBottom: 28 }}>
+        <nav className="category-scroll" aria-label="Prompt categories">
           {categories.map((category) => {
             const isActive = activeCategory === category;
             return (
