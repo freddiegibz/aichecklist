@@ -11,55 +11,51 @@ const C = {
   card: "#FAF8F4",
 };
 
-const PROMPT_BUILDER_TYPES = [
-  { id: "explain", label: "Explain", badge: "INFO", desc: "Letters, forms, jargon, and confusing messages" },
-  { id: "write", label: "Write", badge: "PEN", desc: "Emails, replies, polite messages, and wording help" },
-  { id: "decide", label: "Decide", badge: "CHK", desc: "Compare options, think clearly, and choose next steps" },
-  { id: "organize", label: "Organize", badge: "BOX", desc: "Lists, plans, admin tasks, and practical steps" },
-  { id: "safety", label: "Safety", badge: "SHD", desc: "Scam checks, red flags, and safer questions" },
-  { id: "other", label: "Other", badge: "OTR", desc: "Something outside the usual categories" },
+const HELP_TYPES = [
+  { id: "explain", label: "Explain it clearly", badge: "INFO" },
+  { id: "steps", label: "Give me the next steps", badge: "STEP" },
+  { id: "decide", label: "Help me decide", badge: "CHK" },
+  { id: "write", label: "Write something for me", badge: "PEN" },
+  { id: "check", label: "Check for risks or red flags", badge: "SAFE" },
+  { id: "other", label: "Something else", badge: "OTR" },
 ];
 
-const PROMPT_BUILDER_TEMPLATES = [
+const STYLE_OPTIONS = [
+  { id: "simple", label: "Keep it simple" },
+  { id: "steps", label: "Use steps" },
+  { id: "concise", label: "Keep it short" },
+  { id: "gentle", label: "Be calm and reassuring" },
+  { id: "questions", label: "Ask me questions if needed" },
+];
+
+const STARTERS = [
   {
     name: "Explain a confusing letter",
-    type: "explain",
-    otherTask: "",
-    goal: "Explain a letter or message in plain English so I can understand what it means and what I need to do next.",
-    audience: "An everyday person who feels unsure, does not want jargon, and wants a calm, simple explanation.",
-    format: "Start with a short plain-English summary. Then list the key points. End with the next 3 steps I should take.",
-    constraints: "Do not use jargon. Keep the tone calm and clear. If something is uncertain, say so simply.",
+    helpType: "explain",
+    situation: "I have received a letter I do not understand. I want to know what it means, what matters most, and what I need to do next.",
+    preferredHelp: ["simple", "steps", "gentle"],
     extra: "If there is a deadline or amount of money involved, point it out clearly.",
   },
   {
-    name: "Write a polite email reply",
-    type: "write",
-    otherTask: "",
-    goal: "Write a polite email reply that says what I need clearly without sounding rude or awkward.",
-    audience: "Someone replying to a business, landlord, school, service, or workplace message.",
-    format: "Write one short subject line if needed, then a clear email reply in simple language.",
-    constraints: "Keep it respectful. No overly formal phrases. No long paragraphs.",
-    extra: "Make it sound warm, calm, and confident.",
+    name: "Write a polite reply",
+    helpType: "write",
+    situation: "I need to reply to a message politely, clearly, and without sounding rude or awkward.",
+    preferredHelp: ["simple", "concise"],
+    extra: "Make the wording warm, calm, and confident.",
   },
   {
-    name: "Compare two options clearly",
-    type: "decide",
-    otherTask: "",
-    goal: "Help me compare two choices and understand the pros, cons, risks, and best next step.",
-    audience: "Someone who feels stuck and wants help thinking clearly before making a decision.",
-    format: "Use a simple comparison with pros, cons, risks, and a short recommendation based on the information given.",
-    constraints: "Do not pretend to know facts that were not provided. Keep it balanced and practical.",
-    extra: "If more information is needed, list the questions I should answer before deciding.",
+    name: "Compare two options",
+    helpType: "decide",
+    situation: "I am choosing between two options and want help comparing the pros, cons, risks, and best next step.",
+    preferredHelp: ["simple", "steps", "questions"],
+    extra: "If more information is needed before deciding, tell me what I should find out.",
   },
   {
-    name: "Check if something feels like a scam",
-    type: "safety",
-    otherTask: "",
-    goal: "Help me review a message, offer, or website and spot warning signs before I respond or pay.",
-    audience: "Someone who wants to stay safe online and avoid being pressured or tricked.",
-    format: "List the red flags, what looks normal, what I should verify myself, and the safest next step.",
-    constraints: "Do not guarantee that something is safe. Encourage checking trusted sources where needed.",
-    extra: "Use plain English and do not make me feel silly for checking.",
+    name: "Check if something seems risky",
+    helpType: "check",
+    situation: "I want to review a message, offer, or website and understand if there are warning signs before I respond or pay.",
+    preferredHelp: ["simple", "steps", "gentle"],
+    extra: "Do not guarantee that something is safe. Tell me what I should verify myself.",
   },
 ];
 
@@ -100,7 +96,6 @@ function PromptBuilderStepDot({ step, current, label, onClick }) {
           fontFamily: "'Space Mono', monospace",
           fontSize: 11,
           fontWeight: 700,
-          transition: "all 0.2s ease",
         }}
         aria-hidden="true"
       >
@@ -128,18 +123,7 @@ function PromptBuilderTextarea({ value, onChange, placeholder, rows = 4, label, 
   return (
     <div>
       {label ? (
-        <label
-          style={{
-            display: "block",
-            fontFamily: "'Space Mono', monospace",
-            fontSize: 10,
-            letterSpacing: 2,
-            color: C.muted,
-            textTransform: "uppercase",
-            fontWeight: 700,
-            marginBottom: 8,
-          }}
-        >
+        <label style={{ display: "block", fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: 2, color: C.muted, textTransform: "uppercase", fontWeight: 700, marginBottom: 8 }}>
           {label}
         </label>
       ) : null}
@@ -161,53 +145,37 @@ function PromptBuilderTextarea({ value, onChange, placeholder, rows = 4, label, 
           resize: "vertical",
           outline: "none",
           boxSizing: "border-box",
-          transition: "border-color 0.15s ease, box-shadow 0.15s ease",
-        }}
-        onFocus={(event) => {
-          event.target.style.borderColor = C.pink;
-          event.target.style.boxShadow = `0 0 0 3px ${C.pink}30`;
-        }}
-        onBlur={(event) => {
-          event.target.style.borderColor = C.border;
-          event.target.style.boxShadow = "none";
         }}
       />
-      {hint ? (
-        <div
-          style={{
-            fontFamily: "'Outfit', sans-serif",
-            fontSize: 12,
-            color: C.muted,
-            lineHeight: 1.5,
-            marginTop: 8,
-          }}
-        >
-          {hint}
-        </div>
-      ) : null}
+      {hint ? <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: C.muted, lineHeight: 1.5, marginTop: 8 }}>{hint}</div> : null}
     </div>
   );
 }
 
-function assemblePrompt({ type, otherTask, goal, audience, format, constraints, extra }) {
-  const typeLabel = type === "other"
-    ? otherTask || "custom task"
-    : PROMPT_BUILDER_TYPES.find((item) => item.id === type)?.label || "task";
+function assemblePrompt({ helpType, otherHelp, situation, preferredHelp, extra }) {
+  const selectedType = HELP_TYPES.find((item) => item.id === helpType);
+  const helpLabel = helpType === "other" ? otherHelp || "custom help" : selectedType?.label || "help";
+  const styles = preferredHelp
+    .map((id) => STYLE_OPTIONS.find((item) => item.id === id)?.label)
+    .filter(Boolean);
 
-  const parts = [];
-  parts.push(`You are helping me with a ${typeLabel.toLowerCase()} task.`);
-  parts.push("Use plain English, be practical, and make the result easy to follow.");
+  const parts = [
+    `I need help with this situation:`,
+    situation || "[Describe the situation here]",
+    "",
+    `Please ${helpLabel.toLowerCase()}.`,
+  ];
+
+  if (styles.length) {
+    parts.push(`How I want the answer: ${styles.join(", ")}.`);
+  }
+
+  if (extra) {
+    parts.push(`Anything else that matters: ${extra}`);
+  }
+
   parts.push("");
-
-  if (type === "other" && otherTask) parts.push(`Task type\n${otherTask}`);
-  if (goal) parts.push(`Goal\n${goal}`);
-  if (audience) parts.push(`Audience / Use case\n${audience}`);
-  if (format) parts.push(`Format\n${format}`);
-  if (constraints) parts.push(`Constraints\n${constraints}`);
-  if (extra) parts.push(`Anything else to include\n${extra}`);
-
-  parts.push("");
-  parts.push("Return the result directly in a clear, useful way without unnecessary preamble.");
+  parts.push("Use plain English. Be practical. If important information is missing, say what else I should provide.");
 
   return parts.join("\n\n");
 }
@@ -215,26 +183,22 @@ function assemblePrompt({ type, otherTask, goal, audience, format, constraints, 
 export default function PromptBuilder() {
   useEffect(() => {
     const link = document.createElement("link");
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap";
+    link.href = "https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap";
     link.rel = "stylesheet";
     document.head.appendChild(link);
   }, []);
 
   const STEPS = [
-    { key: "type", label: "Type" },
-    { key: "goal", label: "Goal" },
-    { key: "details", label: "Details" },
+    { key: "situation", label: "Situation" },
+    { key: "help", label: "Help" },
     { key: "review", label: "Review" },
   ];
 
   const emptyForm = {
-    type: "explain",
-    otherTask: "",
-    goal: "",
-    audience: "",
-    format: "",
-    constraints: "",
+    helpType: "explain",
+    otherHelp: "",
+    situation: "",
+    preferredHelp: ["simple"],
     extra: "",
   };
 
@@ -253,15 +217,22 @@ export default function PromptBuilder() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function loadTemplate(template) {
+  function toggleStyle(id) {
+    setForm((prev) => ({
+      ...prev,
+      preferredHelp: prev.preferredHelp.includes(id)
+        ? prev.preferredHelp.filter((item) => item !== id)
+        : [...prev.preferredHelp, id],
+    }));
+  }
+
+  function loadStarter(starter) {
     setForm({
-      type: template.type,
-      otherTask: template.otherTask,
-      goal: template.goal,
-      audience: template.audience,
-      format: template.format,
-      constraints: template.constraints,
-      extra: template.extra,
+      helpType: starter.helpType,
+      otherHelp: "",
+      situation: starter.situation,
+      preferredHelp: starter.preferredHelp,
+      extra: starter.extra,
     });
     setCurrent(STEPS.length - 1);
   }
@@ -273,27 +244,17 @@ export default function PromptBuilder() {
 
   async function copyPrompt() {
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(assembledPrompt);
-      } else {
-        const textarea = document.createElement("textarea");
-        textarea.value = assembledPrompt;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-      }
-
+      await navigator.clipboard.writeText(assembledPrompt);
       setCopied(true);
       clearTimeout(copyTimerRef.current);
       copyTimerRef.current = setTimeout(() => setCopied(false), 1800);
     } catch {
-      // Silent fail for quick utility behavior.
+      // Silent fail for utility behavior.
     }
   }
 
   function savePrompt() {
-    const name = form.goal ? form.goal.slice(0, 60) : form.otherTask || "Untitled prompt";
+    const name = form.situation ? form.situation.slice(0, 60) : "Untitled prompt";
     setSaved((prev) => [{ name, form: { ...form }, id: Date.now() }, ...prev]);
     setSavedToast(true);
     clearTimeout(saveTimerRef.current);
@@ -305,244 +266,60 @@ export default function PromptBuilder() {
     setCurrent(STEPS.length - 1);
   }
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(copyTimerRef.current);
-      clearTimeout(saveTimerRef.current);
-    };
+  useEffect(() => () => {
+    clearTimeout(copyTimerRef.current);
+    clearTimeout(saveTimerRef.current);
   }, []);
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh", padding: "clamp(16px, 3vw, 32px)" }}>
       <style>{`
-        .pb-btn:focus-visible {
-          outline: 3px solid ${C.pink};
-          outline-offset: 2px;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .pb-btn, .pb-btn * { transition: none !important; }
-        }
+        .pb-btn:focus-visible { outline: 3px solid ${C.pink}; outline-offset: 2px; }
       `}</style>
 
-      <main
-        style={{
-          background: C.bg,
-          backgroundImage:
-            "linear-gradient(rgba(180,175,165,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(180,175,165,.15) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          border: `1px solid ${C.border}`,
-          borderRadius: 16,
-          overflow: "hidden",
-          boxShadow: "0 4px 16px rgba(26,26,46,0.08)",
-          maxWidth: 1100,
-          margin: "0 auto",
-        }}
-        aria-label="Prompt Builder wizard"
-      >
-        <header
-          style={{
-            background: C.navy,
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-            padding: "28px 28px 24px",
-            color: C.white,
-          }}
-        >
-          <div
-            style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 10,
-              letterSpacing: 2.5,
-              color: C.pink,
-              textTransform: "uppercase",
-              fontWeight: 700,
-              marginBottom: 10,
-            }}
-          >
-            Guided Builder · 4 Steps
+      <main style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 4px 16px rgba(26,26,46,0.08)", maxWidth: 1100, margin: "0 auto" }}>
+        <header style={{ background: C.navy, padding: "28px 28px 24px", color: C.white }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: 2.5, color: C.pink, textTransform: "uppercase", fontWeight: 700, marginBottom: 10 }}>
+            Guided Builder · 3 Steps
           </div>
-          <h2
-            style={{
-              margin: "0 0 10px 0",
-              fontFamily: "'Outfit', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)",
-              fontWeight: 800,
-              color: C.white,
-              lineHeight: 1.2,
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Build a custom prompt for real life tasks
+          <h2 style={{ margin: "0 0 10px", fontFamily: "'Outfit', sans-serif", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 800 }}>
+            Make a prompt for any situation
           </h2>
-          <p
-            style={{
-              margin: 0,
-              fontFamily: "'Outfit', sans-serif",
-              fontSize: 14,
-              color: "rgba(255,255,255,0.7)",
-              lineHeight: 1.55,
-              maxWidth: 700,
-            }}
-          >
-            Pick a type, say what you need, add any useful details, then copy the finished prompt. It is lighter now, but still gives you room for unusual tasks.
+          <p style={{ margin: 0, fontFamily: "'Outfit', sans-serif", fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.55, maxWidth: 700 }}>
+            Tell us what is going on, choose the kind of help you want, and copy a ready-to-use prompt. No prompt-writing knowledge needed.
           </p>
         </header>
 
-        <nav
-          aria-label="Wizard progress"
-          style={{
-            display: "flex",
-            gap: 4,
-            padding: "18px 20px",
-            background: C.white,
-            borderBottom: `1px solid ${C.border}`,
-          }}
-        >
+        <nav aria-label="Builder progress" style={{ display: "flex", gap: 4, padding: "18px 20px", background: C.white, borderBottom: `1px solid ${C.border}` }}>
           {STEPS.map((step, index) => (
-            <PromptBuilderStepDot
-              key={step.key}
-              step={index}
-              current={current}
-              label={step.label}
-              onClick={() => setCurrent(index)}
-            />
+            <PromptBuilderStepDot key={step.key} step={index} current={current} label={step.label} onClick={() => setCurrent(index)} />
           ))}
         </nav>
 
-        <section
-          style={{ padding: "28px", background: C.white, borderBottom: `1px solid ${C.border}` }}
-          aria-live="polite"
-        >
+        <section style={{ padding: 28, background: C.white, borderBottom: `1px solid ${C.border}` }}>
           {current === 0 ? (
-            <div>
-              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                What do you need help with?
-              </h3>
-              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                Pick the closest match. If it does not fit the usual categories, choose Other and describe the task in your own words.
-              </p>
-
-              <div
-                role="radiogroup"
-                aria-label="Prompt type"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                  gap: 10,
-                  marginBottom: 20,
-                }}
-              >
-                {PROMPT_BUILDER_TYPES.map((type) => {
-                  const isSelected = form.type === type.id;
-
-                  return (
-                    <button
-                      key={type.id}
-                      className="pb-btn"
-                      role="radio"
-                      aria-checked={isSelected}
-                      onClick={() => updateField("type", type.id)}
-                      style={{
-                        padding: "14px 16px",
-                        background: isSelected ? `${C.pink}20` : C.card,
-                        border: `2px solid ${isSelected ? C.pink : C.border}`,
-                        borderRadius: 10,
-                        cursor: "pointer",
-                        textAlign: "left",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 4,
-                        transition: "all 0.15s ease",
-                        minHeight: 92,
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            minWidth: 38,
-                            minHeight: 24,
-                            borderRadius: 999,
-                            background: C.white,
-                            border: `1px solid ${C.border}`,
-                            fontFamily: "'Space Mono', monospace",
-                            fontSize: 10,
-                            fontWeight: 700,
-                            color: C.navy,
-                          }}
-                          aria-hidden="true"
-                        >
-                          {type.badge}
-                        </span>
-                        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 700, color: C.navy }}>
-                          {type.label}
-                        </span>
-                      </div>
-                      <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: C.muted, lineHeight: 1.45 }}>
-                        {type.desc}
-                      </div>
-                    </button>
-                  );
-                })}
+            <div style={{ display: "grid", gap: 18 }}>
+              <div>
+                <h3 style={{ margin: "0 0 6px", fontFamily: "'Outfit', sans-serif", fontSize: 20, color: C.navy }}>What is going on?</h3>
+                <p style={{ margin: 0, fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                  Write it in your own words. Messy is fine. The builder will turn it into the prompt.
+                </p>
               </div>
-
-              {form.type === "other" ? (
-                <PromptBuilderTextarea
-                  value={form.otherTask}
-                  onChange={(value) => updateField("otherTask", value)}
-                  placeholder="Example: Help me turn my messy notes into a clear message for my support worker."
-                  rows={3}
-                  label="Other task"
-                  hint="Describe the kind of task this is so the builder knows how to frame the prompt."
-                />
-              ) : null}
-
-              <div style={{ marginTop: 24 }}>
-                <div
-                  style={{
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: 10,
-                    letterSpacing: 2,
-                    color: C.muted,
-                    textTransform: "uppercase",
-                    fontWeight: 700,
-                    marginBottom: 10,
-                  }}
-                >
-                  Or start from a ready-made example
+              <PromptBuilderTextarea
+                value={form.situation}
+                onChange={(value) => updateField("situation", value)}
+                placeholder="Example: I got a letter from my energy supplier and I do not understand whether I owe money or what I need to do next."
+                rows={6}
+                label="Describe your situation"
+              />
+              <div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: 2, color: C.muted, textTransform: "uppercase", fontWeight: 700, marginBottom: 10 }}>
+                  Or start from an example
                 </div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                    gap: 8,
-                  }}
-                >
-                  {PROMPT_BUILDER_TEMPLATES.map((template, index) => (
-                    <button
-                      key={index}
-                      className="pb-btn"
-                      onClick={() => loadTemplate(template)}
-                      style={{
-                        padding: "12px 14px",
-                        background: C.card,
-                        border: `1px dashed ${C.border}`,
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        textAlign: "left",
-                        fontFamily: "'Outfit', sans-serif",
-                        fontSize: 13,
-                        color: C.navy,
-                        lineHeight: 1.4,
-                        fontWeight: 600,
-                        minHeight: 44,
-                        transition: "all 0.15s ease",
-                      }}
-                    >
-                      {template.name}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 8 }}>
+                  {STARTERS.map((starter) => (
+                    <button key={starter.name} className="pb-btn" onClick={() => loadStarter(starter)} style={{ padding: "12px 14px", background: C.card, border: `1px dashed ${C.border}`, borderRadius: 8, cursor: "pointer", textAlign: "left", fontFamily: "'Outfit', sans-serif", fontSize: 13, color: C.navy, fontWeight: 600 }}>
+                      {starter.name}
                     </button>
                   ))}
                 </div>
@@ -551,354 +328,113 @@ export default function PromptBuilder() {
           ) : null}
 
           {current === 1 ? (
-            <div>
-              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                What do you want the AI to do?
-              </h3>
-              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                Describe the result you want in one or two clear sentences.
-              </p>
+            <div style={{ display: "grid", gap: 20 }}>
+              <div>
+                <h3 style={{ margin: "0 0 6px", fontFamily: "'Outfit', sans-serif", fontSize: 20, color: C.navy }}>What kind of help would be most useful?</h3>
+                <p style={{ margin: 0, fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                  Pick the closest match. If none fit, choose something else and describe it.
+                </p>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 10 }}>
+                {HELP_TYPES.map((type) => {
+                  const selected = form.helpType === type.id;
+                  return (
+                    <button key={type.id} className="pb-btn" onClick={() => updateField("helpType", type.id)} style={{ padding: "14px 16px", background: selected ? `${C.pink}20` : C.card, border: `2px solid ${selected ? C.pink : C.border}`, borderRadius: 10, cursor: "pointer", textAlign: "left" }}>
+                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: C.muted, marginBottom: 6 }}>{type.badge}</div>
+                      <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 700, color: C.navy }}>{type.label}</div>
+                    </button>
+                  );
+                })}
+              </div>
+              {form.helpType === "other" ? (
+                <PromptBuilderTextarea
+                  value={form.otherHelp}
+                  onChange={(value) => updateField("otherHelp", value)}
+                  placeholder="Example: Help me turn this into a clear message for my support worker."
+                  rows={3}
+                  label="What help do you want?"
+                />
+              ) : null}
+              <div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: 2, color: C.muted, textTransform: "uppercase", fontWeight: 700, marginBottom: 10 }}>
+                  Optional controls
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {STYLE_OPTIONS.map((option) => {
+                    const selected = form.preferredHelp.includes(option.id);
+                    return (
+                      <button key={option.id} className="pb-btn" onClick={() => toggleStyle(option.id)} style={{ minHeight: 38, padding: "0 12px", borderRadius: 999, border: `1px solid ${selected ? C.pink : C.border}`, background: selected ? `${C.pink}20` : C.white, color: C.navy, fontFamily: "'Outfit', sans-serif", fontSize: 13, cursor: "pointer" }}>
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <PromptBuilderTextarea
-                value={form.goal}
-                onChange={(value) => updateField("goal", value)}
-                placeholder="Example: Explain this council letter in simple language and tell me what I need to do next."
+                value={form.extra}
+                onChange={(value) => updateField("extra", value)}
+                placeholder="Example: Mention the deadline clearly, or keep the tone warm because I am worried."
                 rows={4}
-                hint="Specific goals give better results than vague ones."
+                label="Anything else that matters?"
+                hint="Optional. Add nuance, tone, details, or special instructions."
               />
             </div>
           ) : null}
 
           {current === 2 ? (
-            <div style={{ display: "grid", gap: 18 }}>
-              <div>
-                <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                  Add the useful details
-                </h3>
-                <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                  This is the compact version. Everything that shapes the answer lives here in one place.
-                </p>
-              </div>
-
-              <PromptBuilderTextarea
-                value={form.audience}
-                onChange={(value) => updateField("audience", value)}
-                placeholder="Example: I want this written for someone who is not technical and may feel stressed or confused."
-                rows={3}
-                label="Who is this for?"
-                hint="You can mention age, experience level, confidence, or the situation they are in."
-              />
-
-              <PromptBuilderTextarea
-                value={form.format}
-                onChange={(value) => updateField("format", value)}
-                placeholder="Example: Start with a short summary, then use bullet points, then finish with 3 practical next steps."
-                rows={3}
-                label="What should the answer look like?"
-                hint="Ask for bullet points, short paragraphs, a checklist, or step-by-step help."
-              />
-
-              <PromptBuilderTextarea
-                value={form.constraints}
-                onChange={(value) => updateField("constraints", value)}
-                placeholder="Example: Do not use jargon. Do not sound robotic. Do not make anything up if the information is unclear."
-                rows={3}
-                label="What should it avoid?"
-                hint="Say what would make the answer less useful for you."
-              />
-
-              <PromptBuilderTextarea
-                value={form.extra}
-                onChange={(value) => updateField("extra", value)}
-                placeholder="Example: Make it sound calm and reassuring. If there is a deadline, highlight it clearly. Keep the language very simple."
-                rows={4}
-                label="Other details or creative control"
-                hint="Use this for nuance, personal context, tone, examples, or anything outside of the norm."
-              />
-            </div>
-          ) : null}
-
-          {current === 3 ? (
             <div>
-              <h3 style={{ margin: "0 0 6px 0", fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 700, color: C.navy }}>
-                Review and copy
-              </h3>
-              <p style={{ margin: "0 0 20px 0", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
-                This is your finished prompt. Copy it and paste it into ChatGPT or another AI tool.
+              <h3 style={{ margin: "0 0 6px", fontFamily: "'Outfit', sans-serif", fontSize: 20, color: C.navy }}>Your prompt is ready</h3>
+              <p style={{ margin: "0 0 20px", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                Copy it into ChatGPT or another AI tool. You can always come back and adjust the situation if the result needs refining.
               </p>
-
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-                <button
-                  className="pb-btn"
-                  onClick={copyPrompt}
-                  style={{
-                    padding: "12px 20px",
-                    background: copied ? C.green : C.pink,
-                    color: C.navy,
-                    border: "none",
-                    borderRadius: 8,
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: 1.5,
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                    minHeight: 44,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    transition: "background 0.2s ease",
-                  }}
-                >
-                  <span>{copied ? "OK" : "COPY"}</span>
-                  <span>{copied ? "Copied to clipboard" : "Copy Prompt"}</span>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button className="pb-btn" onClick={copyPrompt} style={{ padding: "12px 20px", background: copied ? C.green : C.pink, color: C.navy, border: "none", borderRadius: 8, fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                  {copied ? "Copied" : "Copy Prompt"}
                 </button>
-                <button
-                  className="pb-btn"
-                  onClick={savePrompt}
-                  style={{
-                    padding: "12px 20px",
-                    background: C.card,
-                    color: C.navy,
-                    border: `1px solid ${C.border}`,
-                    borderRadius: 8,
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: 1.5,
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                    minHeight: 44,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                  }}
-                >
-                  <span>{savedToast ? "SAVED" : "SAVE"}</span>
-                  <span>{savedToast ? "Saved" : "Save Prompt"}</span>
+                <button className="pb-btn" onClick={savePrompt} style={{ padding: "12px 20px", background: C.card, color: C.navy, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                  {savedToast ? "Saved" : "Save Prompt"}
                 </button>
-                <button
-                  className="pb-btn"
-                  onClick={reset}
-                  style={{
-                    padding: "12px 20px",
-                    background: "transparent",
-                    color: C.muted,
-                    border: `1px solid ${C.border}`,
-                    borderRadius: 8,
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: 1.5,
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                    minHeight: 44,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                  }}
-                >
-                  <span>RESET</span>
-                  <span>Start Over</span>
+                <button className="pb-btn" onClick={reset} style={{ padding: "12px 20px", background: "transparent", color: C.muted, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                  Start Over
                 </button>
               </div>
             </div>
           ) : null}
         </section>
 
-        <section
-          style={{ padding: "24px 28px", background: C.card, borderBottom: `1px solid ${C.border}` }}
-          aria-labelledby="pb-preview"
-        >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
-            <h3
-              id="pb-preview"
-              style={{
-                margin: 0,
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 11,
-                letterSpacing: 3,
-                color: C.muted,
-                textTransform: "uppercase",
-                fontWeight: 700,
-              }}
-            >
-              Live Preview
-            </h3>
-            <div
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 10,
-                letterSpacing: 1.5,
-                color: C.muted,
-                fontWeight: 700,
-              }}
-            >
-              {assembledPrompt.split(/\s+/).filter(Boolean).length} words
-            </div>
+        <section style={{ padding: "24px 28px", background: C.card, borderBottom: `1px solid ${C.border}` }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, gap: 8 }}>
+            <h3 style={{ margin: 0, fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 3, color: C.muted, textTransform: "uppercase" }}>Live Preview</h3>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: C.muted }}>{assembledPrompt.split(/\s+/).filter(Boolean).length} words</div>
           </div>
-          <pre
-            style={{
-              margin: 0,
-              padding: "18px 20px",
-              background: C.navy,
-              color: "rgba(255,255,255,0.92)",
-              borderRadius: 10,
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 13,
-              lineHeight: 1.65,
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-              maxHeight: 320,
-              overflowY: "auto",
-            }}
-          >
+          <pre style={{ margin: 0, padding: "18px 20px", background: C.navy, color: "rgba(255,255,255,0.92)", borderRadius: 10, fontFamily: "'Space Mono', monospace", fontSize: 13, lineHeight: 1.65, whiteSpace: "pre-wrap", wordBreak: "break-word", maxHeight: 320, overflowY: "auto" }}>
             {assembledPrompt}
           </pre>
         </section>
 
         {saved.length > 0 ? (
-          <section
-            style={{ padding: "24px 28px", background: C.white, borderBottom: `1px solid ${C.border}` }}
-            aria-labelledby="pb-saved"
-          >
-            <h3
-              id="pb-saved"
-              style={{
-                margin: "0 0 12px 0",
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 11,
-                letterSpacing: 3,
-                color: C.muted,
-                textTransform: "uppercase",
-                fontWeight: 700,
-              }}
-            >
+          <section style={{ padding: "24px 28px", background: C.white, borderBottom: `1px solid ${C.border}` }}>
+            <h3 style={{ margin: "0 0 12px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 3, color: C.muted, textTransform: "uppercase" }}>
               Saved This Session ({saved.length})
             </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "grid", gap: 8 }}>
               {saved.map((item) => (
-                <button
-                  key={item.id}
-                  className="pb-btn"
-                  onClick={() => loadSaved(item)}
-                  style={{
-                    padding: "12px 16px",
-                    background: C.card,
-                    border: `1px solid ${C.border}`,
-                    borderRadius: 8,
-                    cursor: "pointer",
-                    textAlign: "left",
-                    fontFamily: "'Outfit', sans-serif",
-                    fontSize: 14,
-                    color: C.navy,
-                    lineHeight: 1.45,
-                    fontWeight: 600,
-                    minHeight: 44,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Space Mono', monospace",
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: C.muted,
-                    }}
-                    aria-hidden="true"
-                  >
-                    {PROMPT_BUILDER_TYPES.find((type) => type.id === item.form.type)?.badge || "SAVE"}
-                  </span>
-                  <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {item.name}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Space Mono', monospace",
-                      fontSize: 9,
-                      letterSpacing: 1.5,
-                      color: C.muted,
-                      textTransform: "uppercase",
-                      fontWeight: 700,
-                      flexShrink: 0,
-                    }}
-                  >
-                    Load
-                  </span>
+                <button key={item.id} className="pb-btn" onClick={() => loadSaved(item)} style={{ padding: "12px 16px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, cursor: "pointer", textAlign: "left", fontFamily: "'Outfit', sans-serif", fontSize: 14, color: C.navy }}>
+                  {item.name}
                 </button>
               ))}
             </div>
           </section>
         ) : null}
 
-        <div
-          style={{
-            padding: "20px 28px",
-            background: C.white,
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 10,
-            flexWrap: "wrap",
-          }}
-        >
-          <button
-            className="pb-btn"
-            onClick={() => setCurrent((step) => Math.max(0, step - 1))}
-            disabled={current === 0}
-            style={{
-              padding: "12px 20px",
-              background: current === 0 ? "transparent" : C.card,
-              color: current === 0 ? C.muted : C.navy,
-              border: `1px solid ${C.border}`,
-              borderRadius: 8,
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: 1.5,
-              textTransform: "uppercase",
-              cursor: current === 0 ? "not-allowed" : "pointer",
-              opacity: current === 0 ? 0.4 : 1,
-              minHeight: 44,
-            }}
-          >
+        <div style={{ padding: "20px 28px", background: C.white, display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <button className="pb-btn" onClick={() => setCurrent((step) => Math.max(0, step - 1))} disabled={current === 0} style={{ padding: "12px 20px", background: current === 0 ? "transparent" : C.card, color: current === 0 ? C.muted : C.navy, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, cursor: current === 0 ? "not-allowed" : "pointer", opacity: current === 0 ? 0.4 : 1 }}>
             Back
           </button>
-
-          <div
-            style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 11,
-              letterSpacing: 2,
-              color: C.muted,
-              textTransform: "uppercase",
-              alignSelf: "center",
-              fontWeight: 700,
-            }}
-          >
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 2, color: C.muted, textTransform: "uppercase", alignSelf: "center" }}>
             Step {current + 1} of {STEPS.length}
           </div>
-
-          <button
-            className="pb-btn"
-            onClick={() => setCurrent((step) => Math.min(STEPS.length - 1, step + 1))}
-            disabled={isFinalStep}
-            style={{
-              padding: "12px 20px",
-              background: isFinalStep ? "transparent" : C.pink,
-              color: isFinalStep ? C.muted : C.navy,
-              border: isFinalStep ? `1px solid ${C.border}` : "none",
-              borderRadius: 8,
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: 1.5,
-              textTransform: "uppercase",
-              cursor: isFinalStep ? "not-allowed" : "pointer",
-              opacity: isFinalStep ? 0.4 : 1,
-              minHeight: 44,
-            }}
-          >
+          <button className="pb-btn" onClick={() => setCurrent((step) => Math.min(STEPS.length - 1, step + 1))} disabled={isFinalStep} style={{ padding: "12px 20px", background: isFinalStep ? "transparent" : C.pink, color: isFinalStep ? C.muted : C.navy, border: isFinalStep ? `1px solid ${C.border}` : "none", borderRadius: 8, fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, cursor: isFinalStep ? "not-allowed" : "pointer", opacity: isFinalStep ? 0.4 : 1 }}>
             Next
           </button>
         </div>
