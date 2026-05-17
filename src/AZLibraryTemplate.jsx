@@ -9,6 +9,8 @@ const LIBRARY_CONFIG = {
 
 const BUILDER_PASSWORD = import.meta.env.VITE_BUILDER_PASSWORD || "AIConfidenceXXX";
 const BUILDER_UNLOCK_KEY = "builder-unlocked";
+const STARTER_PLAN_PASSWORD = import.meta.env.VITE_STARTER_PLAN_PASSWORD || "AIConfidenceXXX";
+const STARTER_PLAN_UNLOCK_KEY = "starter-plan-unlocked";
 
 const categories = [
   "Explaining Confusing Things",
@@ -1674,12 +1676,17 @@ export default function AZLibraryTemplate() {
   const [builderPasswordInput, setBuilderPasswordInput] = useState("");
   const [builderUnlocked, setBuilderUnlocked] = useState(false);
   const [builderPasswordError, setBuilderPasswordError] = useState("");
+  const [starterPlanPasswordInput, setStarterPlanPasswordInput] = useState("");
+  const [starterPlanUnlocked, setStarterPlanUnlocked] = useState(false);
+  const [starterPlanPasswordError, setStarterPlanPasswordError] = useState("");
 
   useEffect(() => {
     try {
       setBuilderUnlocked(window.localStorage.getItem(BUILDER_UNLOCK_KEY) === "true");
+      setStarterPlanUnlocked(window.localStorage.getItem(STARTER_PLAN_UNLOCK_KEY) === "true");
     } catch {
       setBuilderUnlocked(false);
+      setStarterPlanUnlocked(false);
     }
   }, []);
 
@@ -1724,6 +1731,25 @@ export default function AZLibraryTemplate() {
     }
 
     setBuilderPasswordError("That password is not correct.");
+  };
+
+  const unlockStarterPlan = (event) => {
+    event.preventDefault();
+
+    if (starterPlanPasswordInput === STARTER_PLAN_PASSWORD) {
+      setStarterPlanUnlocked(true);
+      setStarterPlanPasswordError("");
+      setStarterPlanPasswordInput("");
+
+      try {
+        window.localStorage.setItem(STARTER_PLAN_UNLOCK_KEY, "true");
+      } catch {
+        // ignore storage failures in quick-lock mode
+      }
+      return;
+    }
+
+    setStarterPlanPasswordError("That password is not correct.");
   };
 
   return (
@@ -1954,6 +1980,24 @@ export default function AZLibraryTemplate() {
             }}
           >
             Builder
+          </button>
+          <button
+            type="button"
+            className="top-nav-button"
+            onClick={() => setActiveView("starterPlan")}
+            style={{
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: activeView === "starterPlan" ? "#FFFFFF" : "rgba(255,255,255,0.08)",
+              color: activeView === "starterPlan" ? "#1E1B2E" : "#FFFFFF",
+              borderRadius: 999,
+              minHeight: 38,
+              padding: "0 14px",
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            14-day plan
           </button>
         </div>
         <button
@@ -2234,6 +2278,176 @@ export default function AZLibraryTemplate() {
                         }}
                       >
                         Buy the Custom Prompt Builder
+                      </a>
+                      <span style={{ color: "#8A8680", fontSize: 13 }}>
+                        Buy now, then use your password to unlock it
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            )}
+          </section>
+        ) : activeView === "starterPlan" ? (
+          <section style={{ display: "grid", gap: 18 }}>
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid rgba(45,42,51,0.08)",
+                borderRadius: 18,
+                padding: 22,
+                boxShadow: "0 1px 4px rgba(45,42,51,0.04)",
+              }}
+            >
+              <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
+                Guided next step
+              </p>
+              <h2 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 30 }}>
+                14-Day AI Confidence Plan
+              </h2>
+              <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555", maxWidth: 720 }}>
+                The Prompt Pack tells you what to ask. The 14-day plan helps you actually use AI until it stops feeling unfamiliar, with one small daily action and copy-and-paste prompts along the way.
+              </p>
+            </div>
+            {starterPlanUnlocked ? (
+              <article
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(45,42,51,0.08)",
+                  borderRadius: 18,
+                  padding: 24,
+                  boxShadow: "0 1px 4px rgba(45,42,51,0.04)",
+                }}
+              >
+                <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#4CAF80" }}>
+                  Access unlocked
+                </p>
+                <h3 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 28 }}>
+                  Your 14-day plan is ready
+                </h3>
+                <p style={{ margin: "0 0 18px", lineHeight: 1.7, color: "#4A4555", maxWidth: 560 }}>
+                  Open the tracker, complete one small milestone each day, and let confidence build from real use rather than more theory.
+                </p>
+                <a
+                  href="/14dayuseme/"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: 44,
+                    padding: "0 18px",
+                    borderRadius: 999,
+                    background: "#1E1B2E",
+                    color: "#FFFFFF",
+                    textDecoration: "none",
+                    fontSize: 14,
+                    fontWeight: 700,
+                  }}
+                >
+                  Open the 14-day plan
+                </a>
+              </article>
+            ) : (
+              <article
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(45,42,51,0.08)",
+                  borderRadius: 18,
+                  padding: 24,
+                  boxShadow: "0 1px 4px rgba(45,42,51,0.04)",
+                }}
+              >
+                <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
+                  Access required
+                </p>
+                <h3 style={{ margin: "0 0 10px", fontFamily: "'Playfair Display', serif", fontSize: 28 }}>
+                  Unlock the 14-day plan
+                </h3>
+                <p style={{ margin: "0 0 18px", lineHeight: 1.7, color: "#4A4555", maxWidth: 560 }}>
+                  If you already bought the 14-Day AI Confidence Plan, enter your password below. If not, this is the guided path for people who have the prompts but still need help turning them into a real habit.
+                </p>
+                <div style={{ display: "grid", gap: 18, maxWidth: 720 }}>
+                  <form onSubmit={unlockStarterPlan} style={{ display: "grid", gap: 12, maxWidth: 420 }}>
+                    <input
+                      type="password"
+                      value={starterPlanPasswordInput}
+                      onChange={(event) => {
+                        setStarterPlanPasswordInput(event.target.value);
+                        if (starterPlanPasswordError) setStarterPlanPasswordError("");
+                      }}
+                      placeholder="Enter plan password"
+                      aria-label="14 day plan password"
+                      style={{
+                        width: "100%",
+                        minHeight: 46,
+                        border: "1px solid rgba(45,42,51,0.12)",
+                        borderRadius: 999,
+                        padding: "0 16px",
+                        background: "#FFFFFF",
+                        color: "#2D2A33",
+                        outline: "none",
+                        fontSize: 14,
+                      }}
+                    />
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                      <button
+                        type="submit"
+                        style={{
+                          border: "none",
+                          background: "#1E1B2E",
+                          color: "#FFFFFF",
+                          borderRadius: 999,
+                          minHeight: 44,
+                          padding: "0 18px",
+                          fontSize: 14,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Unlock plan
+                      </button>
+                      {starterPlanPasswordError ? (
+                        <span style={{ color: "#A03D3D", fontSize: 13 }}>{starterPlanPasswordError}</span>
+                      ) : null}
+                    </div>
+                  </form>
+                  <div
+                    style={{
+                      background: "#FAF6F1",
+                      border: "1px solid rgba(45,42,51,0.08)",
+                      borderRadius: 16,
+                      padding: 18,
+                      display: "grid",
+                      gap: 12,
+                      maxWidth: 520,
+                    }}
+                  >
+                    <p style={{ margin: 0, fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#7C6BC4" }}>
+                      Need access?
+                    </p>
+                    <p style={{ margin: 0, lineHeight: 1.7, color: "#4A4555" }}>
+                      Buy the 14-Day AI Confidence Plan if you want a simple daily path that helps you move from “I do not know what to ask” to actually using AI in everyday life.
+                    </p>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                      <a
+                        href="https://buy.stripe.com/fZu6oG1Iv3Wc0U87hUbZe0Q"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: 44,
+                          padding: "0 18px",
+                          borderRadius: 999,
+                          background: "#1E1B2E",
+                          color: "#FFFFFF",
+                          textDecoration: "none",
+                          fontSize: 14,
+                          fontWeight: 700,
+                        }}
+                      >
+                        Buy the 14-day plan
                       </a>
                       <span style={{ color: "#8A8680", fontSize: 13 }}>
                         Buy now, then use your password to unlock it
