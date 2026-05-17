@@ -1737,6 +1737,24 @@ export default function AZLibraryTemplate() {
         .category-pill:hover { transform: translateY(-1px); }
         .help-links a { transition: all 0.18s ease; }
         .help-links a:hover { transform: translateY(-1px); }
+        .help-cta {
+          width: min(1120px, calc(100vw - 40px));
+          margin: 0 auto 28px;
+          padding: 22px 24px;
+          border-radius: 22px;
+          background: linear-gradient(135deg, #1E1B2E, #2A2540);
+          color: #FFFFFF;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+        }
+        .help-cta-copy {
+          text-align: left;
+        }
+        .help-cta-copy p {
+          margin: 0;
+        }
         .help-link {
           display: inline-flex;
           align-items: center;
@@ -1807,11 +1825,6 @@ export default function AZLibraryTemplate() {
             justify-content: flex-start;
             margin: 0 52px 18px 0;
           }
-          .help-panel {
-            position: static !important;
-            margin: 0 0 22px;
-            text-align: left !important;
-          }
           .help-links {
             display: flex;
             gap: 8px;
@@ -1821,6 +1834,13 @@ export default function AZLibraryTemplate() {
           .help-link {
             min-height: 38px;
             padding: 0 12px;
+          }
+          .help-cta {
+            width: auto;
+            margin: 0 20px 24px;
+            padding: 18px;
+            display: grid;
+            align-items: start;
           }
           .category-scroll {
             position: static;
@@ -1945,34 +1965,6 @@ export default function AZLibraryTemplate() {
         >
           ⌕
         </button>
-        <div
-          className="help-panel"
-          style={{
-            position: "absolute",
-            top: 18,
-            right: 20,
-            textAlign: "right",
-            color: "#FFFFFF",
-          }}
-        >
-          <p style={{ margin: "0 0 6px", fontSize: 12, fontWeight: 700 }}>Want 1:1 AI Help?</p>
-          <div className="help-links">
-            <a className="help-link" href="mailto:adsbyalfred@protonmail.com">
-              <svg className="help-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M4 6.5h16A1.5 1.5 0 0 1 21.5 8v8A1.5 1.5 0 0 1 20 17.5H4A1.5 1.5 0 0 1 2.5 16V8A1.5 1.5 0 0 1 4 6.5Z" stroke="currentColor" strokeWidth="1.8" />
-                <path d="m3.5 7.5 8.5 6 8.5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Email
-            </a>
-            <a className="help-link" href="https://wa.me/447428523955" target="_blank" rel="noreferrer">
-              <svg className="help-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 4.5A7.5 7.5 0 0 0 6.2 16.7L5.5 20l3.5-.7A7.5 7.5 0 1 0 12 4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                <path d="M9.3 9.6c.2-.4.4-.5.7-.5h.7c.2 0 .5.1.7.4l.9 1.4c.1.2.1.4 0 .6l-.5.7c-.1.1-.1.3 0 .5.3.6.8 1.2 1.3 1.7.2.2.4.2.6.1l.8-.4c.2-.1.4-.1.6 0l1.5.8c.3.1.4.4.4.7 0 1-.8 1.7-1.8 1.7-4.2 0-7.6-3.4-7.6-7.6 0-1 .8-1.7 1.8-1.7.3 0 .5.1.7.4l.5 1.1Z" fill="currentColor" />
-              </svg>
-              WhatsApp
-            </a>
-          </div>
-        </div>
         <div className={`mobile-search-panel ${searchOpen ? "is-open" : ""}`}>
           <input
             className="mobile-search-input"
@@ -2401,6 +2393,35 @@ export default function AZLibraryTemplate() {
           </>
         )}
       </main>
+      <aside className="help-cta" aria-label="1 to 1 AI help">
+        <div className="help-cta-copy">
+          <p style={{ margin: "0 0 6px", fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "#E8845C" }}>
+            Want 1:1 AI Help?
+          </p>
+          <p style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, marginBottom: 6 }}>
+            Get personal help using AI with confidence.
+          </p>
+          <p style={{ color: "#C5C0CC", lineHeight: 1.6 }}>
+            Ask a question, get unstuck, or get help applying AI to your own situation.
+          </p>
+        </div>
+        <div className="help-links">
+          <a className="help-link" href="mailto:adsbyalfred@protonmail.com">
+            <svg className="help-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 6.5h16A1.5 1.5 0 0 1 21.5 8v8A1.5 1.5 0 0 1 20 17.5H4A1.5 1.5 0 0 1 2.5 16V8A1.5 1.5 0 0 1 4 6.5Z" stroke="currentColor" strokeWidth="1.8" />
+              <path d="m3.5 7.5 8.5 6 8.5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Email
+          </a>
+          <a className="help-link" href="https://wa.me/447428523955" target="_blank" rel="noreferrer">
+            <svg className="help-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 4.5A7.5 7.5 0 0 0 6.2 16.7L5.5 20l3.5-.7A7.5 7.5 0 1 0 12 4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              <path d="M9.3 9.6c.2-.4.4-.5.7-.5h.7c.2 0 .5.1.7.4l.9 1.4c.1.2.1.4 0 .6l-.5.7c-.1.1-.1.3 0 .5.3.6.8 1.2 1.3 1.7.2.2.4.2.6.1l.8-.4c.2-.1.4-.1.6 0l1.5.8c.3.1.4.4.4.7 0 1-.8 1.7-1.8 1.7-4.2 0-7.6-3.4-7.6-7.6 0-1 .8-1.7 1.8-1.7.3 0 .5.1.7.4l.5 1.1Z" fill="currentColor" />
+            </svg>
+            WhatsApp
+          </a>
+        </div>
+      </aside>
     </div>
   );
 }
