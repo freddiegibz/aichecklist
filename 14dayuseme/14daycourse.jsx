@@ -1,23 +1,37 @@
 import { useState } from "react";
 
 const milestones = [
-  { title: "Define Your Journey", desc: "Decide who your tracker is for and what transformation they complete by the end.", reward: "You know the exact start and end point of your audience's journey.", altitude: "Base Camp", num: "01" },
-  { title: "Map the Milestones", desc: "Break the journey into 5 to 8 meaningful achievements that feel like real progress.", reward: "You have a clear path with milestones your audience will feel proud to reach.", altitude: "1,200m", num: "02" },
-  { title: "Add Rewards", desc: "Give each milestone a reward message or insight that only appears when they reach it.", reward: "Your tracker creates genuine excitement. People check milestones to see what unlocks.", altitude: "2,000m", num: "03" },
-  { title: "Design the Visual", desc: "Choose an illustration that transforms as your audience progresses through milestones.", reward: "Progress is not just a number. It is something people can see and feel.", altitude: "2,800m", num: "04" },
-  { title: "Write the Copy", desc: "Give each milestone a clear title and one-line description that builds momentum.", reward: "Every milestone reads like a mini celebration. Your audience feels pulled forward.", altitude: "3,400m", num: "05" },
-  { title: "Connect to Offer", desc: "Add a CTA at the end that bridges the completed journey to your community or next product.", reward: "Your tracker is a bridge, not a dead end. Every journey leads somewhere meaningful.", altitude: "4,200m", num: "06" },
-  { title: "Publish & Share", desc: "Publish your artifact, test the link, and share your milestone tracker with your audience.", reward: "Your milestone tracker is live. Real people are climbing through it right now.", altitude: "Summit", num: "07" },
+  { title: "Open AI Once", desc: "Open ChatGPT and send one very simple message so the blank box stops feeling unfamiliar.", reward: "You have crossed the hardest first line: AI is no longer something you only think about using.", altitude: "Day 1", num: "01" },
+  { title: "Ask For Plain English", desc: "Use AI to explain one confusing sentence, letter, or message in words you would actually use.", reward: "You have seen the first real use: AI can make confusing things easier to understand.", altitude: "Day 2", num: "02" },
+  { title: "Rewrite A Message", desc: "Take one awkward text or email and ask AI to make it clearer, warmer, or more polite.", reward: "You now know AI can help you say things without overthinking every word.", altitude: "Day 3", num: "03" },
+  { title: "Use A Prompt From The Pack", desc: "Choose one ready-made prompt from the Prompt Pack and use it for a real situation today.", reward: "You have moved from experimenting with AI to using a tool that solves a moment.", altitude: "Day 4", num: "04" },
+  { title: "Ask For Next Steps", desc: "Give AI a small messy problem and ask it to turn the situation into a short action list.", reward: "You have learned to turn uncertainty into movement instead of sitting inside it.", altitude: "Day 5", num: "05" },
+  { title: "Compare Two Options", desc: "Use AI to compare two choices you are considering, including pros, cons, and what you still need to know.", reward: "You have seen that AI is useful for thinking, not just writing.", altitude: "Day 6", num: "06" },
+  { title: "Check A Risk", desc: "Ask AI to help you spot red flags in a message, offer, or decision while remembering to verify important facts yourself.", reward: "You have started using AI as a second pair of eyes, not a replacement for judgment.", altitude: "Day 7", num: "07" },
+  { title: "Improve A Bad Answer", desc: "Take one weak AI answer and ask a better follow-up so the result becomes more useful.", reward: "You have learned the hidden skill: good AI use is often one more question, not one perfect prompt.", altitude: "Day 8", num: "08" },
+  { title: "Add Your Context", desc: "Give AI more background about your situation and notice how much better the answer becomes.", reward: "You now know that context is one of the main levers that makes AI feel intelligent.", altitude: "Day 9", num: "09" },
+  { title: "Use AI For Admin", desc: "Ask AI to help organise one small life-admin task such as a checklist, packing list, phone call notes, or appointment prep.", reward: "You have used AI to reduce friction in ordinary life, where the gains compound quietly.", altitude: "Day 10", num: "10" },
+  { title: "Create Your Own Prompt", desc: "Use the Custom Prompt Builder or write your own request for a situation that is not already in the pack.", reward: "You are no longer limited to the examples. You can now create a useful starting point for new situations.", altitude: "Day 11", num: "11" },
+  { title: "Ask For A Safer Version", desc: "Take a question that includes personal information and ask AI to help you make it safer before you share it.", reward: "You have built a healthy instinct: useful does not mean careless.", altitude: "Day 12", num: "12" },
+  { title: "Make AI Part Of A Routine", desc: "Choose one repeated moment where AI could help you each week and decide when you will use it.", reward: "You have shifted from occasional novelty to a repeatable personal system.", altitude: "Day 13", num: "13" },
+  { title: "Finish With Confidence", desc: "Look back at what you have used AI for, choose your three most useful prompts, and save them for reuse.", reward: "You are not behind anymore. You have a practical way to use AI in your own life.", altitude: "Summit", num: "14" },
 ];
 
 const campPositions = [
-  { x: 140, y: 410, labelSide: "left" },
-  { x: 215, y: 350, labelSide: "right" },
-  { x: 305, y: 295, labelSide: "left" },
-  { x: 375, y: 240, labelSide: "right" },
-  { x: 330, y: 180, labelSide: "left" },
-  { x: 400, y: 125, labelSide: "right" },
-  { x: 370, y: 68, labelSide: "left" },
+  { x: 120, y: 420, labelSide: "left" },
+  { x: 165, y: 395, labelSide: "right" },
+  { x: 210, y: 370, labelSide: "left" },
+  { x: 250, y: 340, labelSide: "right" },
+  { x: 285, y: 310, labelSide: "left" },
+  { x: 320, y: 280, labelSide: "right" },
+  { x: 350, y: 250, labelSide: "left" },
+  { x: 375, y: 220, labelSide: "right" },
+  { x: 350, y: 190, labelSide: "left" },
+  { x: 380, y: 160, labelSide: "right" },
+  { x: 350, y: 130, labelSide: "left" },
+  { x: 385, y: 105, labelSide: "right" },
+  { x: 365, y: 82, labelSide: "left" },
+  { x: 370, y: 60, labelSide: "right" },
 ];
 
 export default function MilestoneTracker() {
@@ -188,9 +202,9 @@ export default function MilestoneTracker() {
 
       {/* Header */}
       <div className="hdr">
-        <div className="hdr-label">ARTIFACT KICKSTART KIT</div>
-        <div className="hdr-title">The Perfect<span className="hdr-accent">Milestone Tracker</span></div>
-        <div className="hdr-sub">Click the camps on the mountain to explore each milestone. Mark them as reached and watch the trail fill up.</div>
+        <div className="hdr-label">AI CONFIDENCE KIT</div>
+        <div className="hdr-title">Your 14-Day<span className="hdr-accent">AI Confidence Climb</span></div>
+        <div className="hdr-sub">A simple daily path from "I do not know what to ask" to using AI in ordinary life with confidence.</div>
       </div>
 
       {/* Mountain */}
@@ -346,7 +360,7 @@ export default function MilestoneTracker() {
         <div className="what-card">
           <span className="what-label">WHAT IS THIS: </span>
           <span className="what-text">
-            This is a milestone tracker about building milestone trackers. Click camps on the mountain to explore each milestone. Mark them as reached to fill the trail and watch the mountain turn green. Claude can build this for your audience.
+            This is your 14-day starter plan. Click a camp to see the day's action, complete it in real life, then mark it as reached. Each day gives you one small use of AI so confidence grows from evidence, not theory.
           </span>
         </div>
       </div>
@@ -355,17 +369,17 @@ export default function MilestoneTracker() {
       <div className="bottom-section">
         <div className="bottom-title">{doneCount === milestones.length
           ? <>You Reached the <em>Summit</em></>
-          : <>[Your Call to Action <em>Goes Here</em>]</>}
+          : <>One Small Step A Day Builds <em>Real Confidence</em></>}
         </div>
         <div className="bottom-text">{doneCount === milestones.length
-          ? "Every milestone is reached. The trail is green. The mountain is alive. Now open Claude and build a milestone tracker for your audience."
-          : "This is where you let your audience know what to do next. Tell them where to get support, point them to your program or community, or explain how to take the next step with you."}
+          ? "You have used AI to understand, write, decide, organise, and move through real situations. You do not need to feel behind anymore; you now know how to begin."
+          : "Do not try to become an AI expert in one sitting. Finish one small task today, mark the milestone, and let the trail build under your feet."}
         </div>
-        <a href="#" className="bottom-btn">{doneCount === milestones.length ? "Join the Community →" : "[Your Button Text]"}</a>
+        <a href="#" className="bottom-btn">{doneCount === milestones.length ? "Return to the Prompt Pack" : "Start Day 1"}</a>
         <div className="bottom-divider"/>
-        <div className="bottom-brand">[Your Brand Name]</div>
-        <div className="bottom-details">[Your Company] · [email@example.com]</div>
-        <div className="bottom-links"><a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a></div>
+        <div className="bottom-brand">AI Confidence Kit</div>
+        <div className="bottom-details">A practical 14-day starter plan for everyday AI use</div>
+        <div className="bottom-links"><a href="#">Prompt Pack</a> · <a href="#">Custom Prompt Builder</a></div>
       </div>
     </div>
   );
