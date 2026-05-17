@@ -1,20 +1,20 @@
 import { useState } from "react";
 
 const milestones = [
-  { title: "Open AI Once", desc: "Open ChatGPT and send one very simple message so the blank box stops feeling unfamiliar.", reward: "You have crossed the hardest first line: AI is no longer something you only think about using.", altitude: "Day 1", num: "01" },
-  { title: "Ask For Plain English", desc: "Use AI to explain one confusing sentence, letter, or message in words you would actually use.", reward: "You have seen the first real use: AI can make confusing things easier to understand.", altitude: "Day 2", num: "02" },
-  { title: "Rewrite A Message", desc: "Take one awkward text or email and ask AI to make it clearer, warmer, or more polite.", reward: "You now know AI can help you say things without overthinking every word.", altitude: "Day 3", num: "03" },
+  { title: "Open AI Once", desc: "Open ChatGPT and send one very simple message so the blank box stops feeling unfamiliar.", prompt: "Please explain what a prompt is in very simple language, as if I have never used AI before.", reward: "You have crossed the hardest first line: AI is no longer something you only think about using.", altitude: "Day 1", num: "01" },
+  { title: "Ask For Plain English", desc: "Use AI to explain one confusing sentence, letter, or message in words you would actually use.", prompt: "Please explain this in very simple plain English. Tell me what it means, what matters most, and what I may need to do next:\n\n[PASTE THE SENTENCE, LETTER, OR MESSAGE HERE]", reward: "You have seen the first real use: AI can make confusing things easier to understand.", altitude: "Day 2", num: "02" },
+  { title: "Rewrite A Message", desc: "Take one awkward text or email and ask AI to make it clearer, warmer, or more polite.", prompt: "Please rewrite this message so it sounds clear, polite, and natural, without changing what I mean:\n\n[PASTE YOUR MESSAGE HERE]", reward: "You now know AI can help you say things without overthinking every word.", altitude: "Day 3", num: "03" },
   { title: "Use A Prompt From The Pack", desc: "Choose one ready-made prompt from the Prompt Pack and use it for a real situation today.", reward: "You have moved from experimenting with AI to using a tool that solves a moment.", altitude: "Day 4", num: "04" },
-  { title: "Ask For Next Steps", desc: "Give AI a small messy problem and ask it to turn the situation into a short action list.", reward: "You have learned to turn uncertainty into movement instead of sitting inside it.", altitude: "Day 5", num: "05" },
-  { title: "Compare Two Options", desc: "Use AI to compare two choices you are considering, including pros, cons, and what you still need to know.", reward: "You have seen that AI is useful for thinking, not just writing.", altitude: "Day 6", num: "06" },
-  { title: "Check A Risk", desc: "Ask AI to help you spot red flags in a message, offer, or decision while remembering to verify important facts yourself.", reward: "You have started using AI as a second pair of eyes, not a replacement for judgment.", altitude: "Day 7", num: "07" },
-  { title: "Improve A Bad Answer", desc: "Take one weak AI answer and ask a better follow-up so the result becomes more useful.", reward: "You have learned the hidden skill: good AI use is often one more question, not one perfect prompt.", altitude: "Day 8", num: "08" },
-  { title: "Add Your Context", desc: "Give AI more background about your situation and notice how much better the answer becomes.", reward: "You now know that context is one of the main levers that makes AI feel intelligent.", altitude: "Day 9", num: "09" },
-  { title: "Use AI For Admin", desc: "Ask AI to help organise one small life-admin task such as a checklist, packing list, phone call notes, or appointment prep.", reward: "You have used AI to reduce friction in ordinary life, where the gains compound quietly.", altitude: "Day 10", num: "10" },
-  { title: "Create Your Own Prompt", desc: "Use the Custom Prompt Builder or write your own request for a situation that is not already in the pack.", reward: "You are no longer limited to the examples. You can now create a useful starting point for new situations.", altitude: "Day 11", num: "11" },
-  { title: "Ask For A Safer Version", desc: "Take a question that includes personal information and ask AI to help you make it safer before you share it.", reward: "You have built a healthy instinct: useful does not mean careless.", altitude: "Day 12", num: "12" },
-  { title: "Make AI Part Of A Routine", desc: "Choose one repeated moment where AI could help you each week and decide when you will use it.", reward: "You have shifted from occasional novelty to a repeatable personal system.", altitude: "Day 13", num: "13" },
-  { title: "Finish With Confidence", desc: "Look back at what you have used AI for, choose your three most useful prompts, and save them for reuse.", reward: "You are not behind anymore. You have a practical way to use AI in your own life.", altitude: "Summit", num: "14" },
+  { title: "Ask For Next Steps", desc: "Give AI a small messy problem and ask it to turn the situation into a short action list.", prompt: "I feel a bit stuck with this situation:\n\n[DESCRIBE THE SITUATION]\n\nPlease turn it into a simple step-by-step plan. Start with the smallest useful next step.", reward: "You have learned to turn uncertainty into movement instead of sitting inside it.", altitude: "Day 5", num: "05" },
+  { title: "Compare Two Options", desc: "Use AI to compare two choices you are considering, including pros, cons, and what you still need to know.", prompt: "Please help me compare these two options clearly:\n\nOption 1: [DESCRIBE OPTION 1]\nOption 2: [DESCRIBE OPTION 2]\n\nList the pros, cons, risks, and the main questions I should answer before deciding.", reward: "You have seen that AI is useful for thinking, not just writing.", altitude: "Day 6", num: "06" },
+  { title: "Check A Risk", desc: "Ask AI to help you spot red flags in a message, offer, or decision while remembering to verify important facts yourself.", prompt: "Please help me review this for possible red flags or risks. Tell me what looks concerning, what looks normal, what I should verify myself, and what the safest next step may be:\n\n[PASTE OR DESCRIBE THE MESSAGE, OFFER, OR SITUATION]", reward: "You have started using AI as a second pair of eyes, not a replacement for judgment.", altitude: "Day 7", num: "07" },
+  { title: "Improve A Bad Answer", desc: "Take one weak AI answer and ask a better follow-up so the result becomes more useful.", prompt: "That answer was too vague for me. Please make it more useful by being more specific, using simpler language, and giving me clear next steps.", reward: "You have learned the hidden skill: good AI use is often one more question, not one perfect prompt.", altitude: "Day 8", num: "08" },
+  { title: "Add The Missing Details", desc: "Take one answer AI already gave you, add the real-life details it could not have known, and ask it to improve the answer using that context.", prompt: "I want to improve the answer you just gave me. Here are the details that matter in my situation:\n\n[ADD THE IMPORTANT DETAILS AI DID NOT KNOW]\n\nPlease revise your answer using this context, and tell me what changed because of the extra information.", reward: "You now know why better context creates better answers: AI can only work with the situation you actually give it.", altitude: "Day 9", num: "09" },
+  { title: "Use AI For Admin", desc: "Ask AI to help organise one small life-admin task such as a checklist, packing list, phone call notes, or appointment prep.", prompt: "Please help me organise this task into a simple checklist I can follow:\n\n[TELL AI THE TASK, APPOINTMENT, CALL, OR JOB YOU NEED TO PREPARE FOR]", reward: "You have used AI to reduce friction in ordinary life, where the gains compound quietly.", altitude: "Day 10", num: "10" },
+  { title: "Create Your Own Prompt", desc: "Use the Custom Prompt Builder or write your own request for a situation that is not already in the pack.", prompt: "I need help with this situation:\n\n[DESCRIBE YOUR SITUATION]\n\nPlease help me turn this into a clear prompt I can use with AI so I get a useful answer.", reward: "You are no longer limited to the examples. You can now create a useful starting point for new situations.", altitude: "Day 11", num: "11" },
+  { title: "Ask For A Safer Version", desc: "Take a question that includes personal information and ask AI to help you make it safer before you share it.", prompt: "Please help me rewrite this question so I can still get useful help without sharing more personal information than necessary:\n\n[PASTE YOUR QUESTION HERE]", reward: "You have built a healthy instinct: useful does not mean careless.", altitude: "Day 12", num: "12" },
+  { title: "Save One Prompt For Reuse", desc: "Choose one prompt that helped you this week, save it somewhere easy to find, and decide exactly when you will use it again.", steps: ["Pick one prompt that genuinely helped you.", "Save it in your phone Notes app, a pinned note, or a document called Useful AI Prompts.", "Rename it by situation, such as Polite Email Reply or Explain A Letter.", "Choose the next moment you will use it again, such as next bill, next appointment, or every Monday morning."], prompt: "Please help me turn this useful prompt into a reusable version I can save and use again later:\n\n[PASTE THE PROMPT THAT HELPED YOU]\n\nMake it clear, simple, and easy for me to reuse next time.", reward: "You have shifted from occasional novelty to a repeatable personal system. One useful prompt is now part of your life, not just a one-off experiment.", altitude: "Day 13", num: "13" },
+  { title: "Build Your Personal Prompt Kit", desc: "Finish the course by choosing the three prompts you are most likely to use again and saving them as your personal starter kit.", steps: ["Look back through the last 13 days and find the prompts that helped you most.", "Choose your top 3 based on real usefulness, not which sounded cleverest.", "Save them together in one place called My AI Prompt Kit.", "Give each one a clear name so you can find it fast later.", "Decide one real situation where you will use each prompt again."], reward: "You are not behind anymore. You now have a small personal prompt kit built from your own life, ready whenever you need it.", altitude: "Summit", num: "14" },
 ];
 
 const campPositions = [
@@ -37,6 +37,7 @@ const campPositions = [
 export default function MilestoneTracker() {
   const [reached, setReached] = useState({});
   const [selected, setSelected] = useState(0);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
 
   const toggleReached = (i) => {
     setReached(p => ({ ...p, [i]: !p[i] }));
@@ -44,6 +45,13 @@ export default function MilestoneTracker() {
   };
 
   const selectCamp = (i) => setSelected(i);
+
+  const copyPrompt = async () => {
+    if (!selectedMs.prompt) return;
+    await navigator.clipboard.writeText(selectedMs.prompt);
+    setCopiedPrompt(true);
+    setTimeout(() => setCopiedPrompt(false), 1600);
+  };
 
   const doneCount = milestones.filter((_, i) => reached[i]).length;
   const progress = doneCount / milestones.length;
@@ -136,6 +144,15 @@ export default function MilestoneTracker() {
         .detail-title{font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(20px,3vw,24px);color:#2d2a33;line-height:1.25;margin-bottom:8px}
         .detail-card.is-reached .detail-title{color:#3a8f5c}
         .detail-desc{font-size:14.5px;line-height:1.7;color:#5a5565}
+        .prompt-box{margin-top:16px;padding:16px;background:#faf6f1;border:1px solid rgba(45,42,51,0.08);border-radius:12px}
+        .prompt-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+        .prompt-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7c6bc4;font-weight:700}
+        .prompt-copy{border:1px solid rgba(45,42,51,0.12);background:#fff;color:#4a4555;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700;cursor:pointer}
+        .prompt-copy.done{background:#4caf80;color:#fff}
+        .prompt-text{font-size:14px;line-height:1.7;color:#2d2a33}
+        .step-list{margin-top:16px;padding:16px;background:#fff7f2;border:1px solid rgba(232,132,92,0.12);border-radius:12px}
+        .step-list-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#e8845c;font-weight:700;margin-bottom:8px}
+        .step-list-items{margin:0;padding-left:18px;color:#5a5565;font-size:14px;line-height:1.7}
 
         .reward{margin-top:16px;padding:16px 18px;background:rgba(76,175,128,0.06);border:1px solid rgba(76,175,128,0.12);border-radius:12px;animation:slideIn .4s ease}
         @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -335,6 +352,27 @@ export default function MilestoneTracker() {
           </div>
           <div className="detail-title">{selectedMs.title}</div>
           <div className="detail-desc">{selectedMs.desc}</div>
+          {selectedMs.steps && (
+            <div className="step-list">
+              <div className="step-list-label">Do this today</div>
+              <ol className="step-list-items">
+                {selectedMs.steps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+            </div>
+          )}
+          {selectedMs.prompt && (
+            <div className="prompt-box">
+              <div className="prompt-top">
+                <div className="prompt-label">Copy this first prompt</div>
+                <button className={`prompt-copy ${copiedPrompt ? "done" : ""}`} onClick={copyPrompt}>
+                  {copiedPrompt ? "Copied" : "Copy prompt"}
+                </button>
+              </div>
+              <div className="prompt-text">{selectedMs.prompt}</div>
+            </div>
+          )}
           {reached[selected] && (
             <div className="reward">
               <div className="reward-label">🎁 UNLOCKED</div>
